@@ -16,9 +16,6 @@ const [menu,setMenu] = useState ("Menu");
                 <a href='#explore-menu' onClick={()=>setMenu("Menu")} className={menu==="Menu"?"active":""}>Menu</a>
                 <a href='#footer' onClick={()=>setMenu("Contact-us")} className={menu==="Contact-us"?"active":""}>Contact us</a>
             </ul>
-            <div className="navbar-right">
-          <img src={assets.search_icon} alt="" />
-          </div>
         </div>
   )
 }
