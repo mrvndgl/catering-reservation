@@ -1,0 +1,226 @@
+.reservation{
+    background-color: #ffffff;
+    padding: 20px;
+    border-radius: 15px 6px 6px 15px;
+    width: 100%;
+    max-width: 80vw;
+    max-height: 90vh;
+    overflow-y: auto;
+    opacity: 0;
+    transform: scale(0.9);
+    transition: opacity 0.3s ease, transform 0.3s ease;
+    position: relative;
+}
+.reservation-container{
+    max-width: 1600px;
+    width: 90%;
+    margin: 0 auto;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+.reservation-popup-title{
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+}
+.reservation-popup-title img{
+    cursor: pointer;
+    width: 24px;
+    height: 24px;
+}
+.reservation-tables{
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 25px;
+    margin-bottom: 30px;
+}
+.reservation-note p{
+    font-style: italic;
+}
+table {
+    width: 100%;
+    border-collapse: separate;
+    border-spacing: 0;
+    background-color: #E7F0DC;
+    border-radius: 20px;
+    overflow: hidden;
+}
+
+th, td {
+    border: none;
+    padding: 10px 20px;
+    text-align: left;
+}
+
+th {
+    text-align: center;
+    background-color: #4CAF50;
+    color: white;
+    font-size: 20px;
+}
+
+td {
+    display: flex;
+    align-items: center;
+    font-size: 15px;
+    white-space: nowrap;
+}
+
+input[type="checkbox"] {
+    appearance: none;
+    -webkit-appearance: none;
+    width: 20px;
+    height: 20px;
+    border: 2px solid #4CAF50;
+    background-color: white;
+    border-radius: 50%;
+    outline: none;
+    cursor: pointer;
+    margin-right: 10px;
+    flex-shrink: 0;
+}
+
+input[type="checkbox"]:checked {
+    background-color: #4CAF50;
+    position: relative;
+}
+
+input[type="checkbox"]:checked::after {
+    content: '\2713';
+    font-size: 14px;
+    color: white;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+}
+
+.food-name {
+    flex-grow: 1;
+    margin-right: 10px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.food-price {
+    font-weight: bold;
+}
+.fade-in{
+    opacity: 1;
+    transform: scale(1);
+}
+.checkout {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin-top: 20px;
+    margin-bottom: 20px;
+}
+.checkout p{
+    font-weight: bold;
+    font-size: 20px;
+    margin-bottom: 10px;
+}
+.total-price {
+    font-size: 18px;
+    font-weight: bold;
+    margin-bottom: 15px;
+}
+
+.checkout button {
+    padding: 15px 30px;
+    font-size: 18px;
+    font-weight: bold;
+    color: white;
+    background-color: #4CAF50;
+    border: none;
+    border-radius: 50px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+.checkout button:hover {
+    background-color: #45a049;
+}
+
+.checkout button:focus {
+    outline: none;
+    box-shadow: 0 0 0 3px rgba(76, 175, 80, 0.5);
+}
+::-webkit-scrollbar {
+    width: 10px;
+}
+
+::-webkit-scrollbar-track {
+    background: #ffffff;;
+    border-radius: 10px;
+}
+
+::-webkit-scrollbar-thumb {
+    background: #45a049;;
+    border-radius: 10px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: #555;
+}
+@media (max-width: 1200px) {
+    .reservation-container {
+        width: 95%;
+    }
+    
+    .reservation-tables {
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    }
+}
+
+@media (max-width: 992px) {
+    .reservation-container {
+        width: 100%;
+    }
+    
+    .reservation-tables {
+        grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+        gap: 15px;
+    }
+}
+
+@media (max-width: 768px) {
+    .reservation-popup-title {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+
+    .reservation-tables {
+        grid-template-columns: 1fr;
+        gap: 10px;
+    }
+    
+    .checkout button {
+        width: 100%;
+        padding: 10px;
+        font-size: 16px;
+    }
+}
+
+@media (max-width: 576px) {
+    .reservation {
+        padding: 10px;
+    }
+    
+    th, td {
+        font-size: 14px;
+    }
+
+    .checkout p {
+        font-size: 18px;
+    }
+
+    .checkout button {
+        padding: 8px;
+        font-size: 14px;
+    }
+}

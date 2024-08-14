@@ -1,0 +1,180 @@
+.place-order{
+    display: flex;
+    align-items: start;
+    justify-content: space-between;
+    gap: 40px;
+    margin-top: 100px;
+}
+.place-order-left{
+    width: 100%;
+    max-width: max(30%,500px);
+}
+.place-order-left .title{
+    font-size: 30px;
+    font-weight: 600;
+    margin-bottom: 30px;
+}
+.place-order-left .title-venue{
+    font-size: 25px;
+    font-weight: 500;
+    margin-top: 10px;
+}
+.place-order-left .title-date{
+    font-size: 25px;
+    font-weight: 500;
+    margin-top: 10px;
+}
+.place-order-left .title-time{
+    font-size: 25px;
+    font-weight: 500;
+    margin-top: 10px;
+}
+.place-order-left input{
+    margin-bottom: 15px;
+    width: 90%;
+    padding: 10px;
+    border: 1px solid #c5c5c5;
+    border-radius: 4px;
+    outline-color: green;
+}
+.place-order .pax-select{
+    width: 40%;
+    padding: 10px;
+    margin-top: 5px;
+    border: 1px solid #c5c5c5;
+    border-radius: 4px;
+    font-size: 13px;
+}
+.place-order-left .multi-fields{
+    display: flex;
+    gap: 5px;
+}
+.place-order-center .multi-fields{
+    width: 100%;
+    display: flex;
+    gap: 5px;
+}
+.time-slot-select{
+    width: 60%;
+    padding: 10px;
+    margin-top: 5px;
+    border: 1px solid #c5c5c5;
+    border-radius: 4px;
+    font-size: 16px;
+}
+.time-slot-select:focus{
+    outline: none;
+    border-color: green;
+}
+.place-order-right{
+    width: 100%;
+    max-width: max(40%,200px);
+}
+.place-order-right .title{
+    font-size: 30px;
+    font-weight: 600;
+    margin-bottom: 30px;
+}
+.place-order-right .order-total-details {
+    display: flex;
+    justify-content: space-between;
+    gap: 10px;
+    margin-top: 10px;
+    font-size: 20px;
+    padding-bottom: 10px;
+    border-bottom: 2px solid #c5c5c5; 
+}
+.place-order-right button{
+    font-size: 15px;
+    border: none;
+    color: white;
+    background-color: #4CAF50;
+    width: max(15vw,200px);
+    padding: 12px 0px;
+    border-radius: 8px;
+    margin-top: 10px;
+    cursor: pointer;
+}
+@media (max-width: 1200px) {
+    .place-order {
+        flex-direction: column;
+        align-items: center;
+        gap: 20px;
+    }
+
+    .place-order-left, .place-order-right {
+        max-width: 80%;
+    }
+
+    .place-order .pax-select {
+        width: 60%;
+    }
+}
+
+@media (max-width: 992px) {
+    .place-order-left, .place-order-right {
+        max-width: 90%;
+    }
+
+    .place-order-left input, .time-slot-select, .place-order .pax-select {
+        width: 100%;
+    }
+
+    .place-order .pax-select {
+        font-size: 14px;
+    }
+}
+
+@media (max-width: 768px) {
+    .place-order-left .title,
+    .place-order-right .title {
+        font-size: 24px;
+    }
+
+    .place-order-left .title-venue,
+    .place-order-left .title-date,
+    .place-order-left .title-time {
+        font-size: 20px;
+    }
+
+    .place-order-right .order-total-details {
+        font-size: 18px;
+    }
+
+    .place-order-right button {
+        width: 100%;
+        font-size: 14px;
+        padding: 10px;
+    }
+}
+
+@media (max-width: 576px) {
+    .place-order {
+        margin-top: 50px;
+        gap: 10px;
+    }
+
+    .place-order-left .title,
+    .place-order-right .title {
+        font-size: 20px;
+    }
+
+    .place-order-left .title-venue,
+    .place-order-left .title-date,
+    .place-order-left .title-time {
+        font-size: 18px;
+    }
+
+    .place-order-right .order-total-details {
+        font-size: 16px;
+    }
+
+    .place-order-left input, .time-slot-select, .place-order .pax-select {
+        font-size: 14px;
+        padding: 8px;
+    }
+
+    .place-order-right button {
+        padding: 8px;
+    }
+}
