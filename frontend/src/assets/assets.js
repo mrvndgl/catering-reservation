@@ -66,6 +66,7 @@ import bag_icon from './bag_icon.png'
 import logout_icon from './logout_icon.png'
 import parcel_icon from './parcel_icon.png'
 import phone_call from './phone_call.png'
+import back_icon from './back.png'
 
 export const assets = {
     logo,
@@ -88,6 +89,7 @@ export const assets = {
     bag_icon,
     parcel_icon,
     phone_call,
+    back_icon
 }
 
 export const menu_list = [
@@ -121,280 +123,240 @@ export const food_list = [
         _id: "1",
         name: "Caldereta",
         image: food_1,
-        price: 1000,
         description: "A hearty and spicy beef stew, perfect for those who love rich, flavorful dishes",
         category: "Beef"
     }, {
         _id: "2",
         name: "Beef with mushroom",
         image: food_2,
-        price: 1000,
         description: "Tender beef paired with mushrooms in a savory, comforting sauce",
         category: "Beef"
     }, {
         _id: "3",
         name: "Beef with onion",
         image: food_3,
-        price: 1000,
         description: "Simple but delicious—beef cooked with sweet, caramelized onions",
         category: "Beef"
     }, {
         _id: "4",
         name: "Beef Stew",
         image: food_4,
-        price: 1000,
         description: "A classic, slow-cooked dish with tender beef and vegetables in a rich broth",
         category: "Beef"
     }, {
         _id: "5",
         name: "Beef with broccoli",
         image: food_5,
-        price: 1000,
         description: "A tasty stir-fry of beef and broccoli, coated in a savory sauce",
         category: "Beef"
     }, {
         _id: "6",
         name: "Beef Steak",
         image: food_6,
-        price: 1000,
         description: "Juicy and flavorful, this beef steak is grilled or pan-seared to perfection",
         category: "Beef"
     }, {
         _id: "7",
         name: "Beef la roca",
         image: food_7,
-        price: 1000,
         description: "A unique and flavorful beef dish with a special blend of spices",
         category: "Beef"
     }, {
         _id: "8",
         name: " Pork Adobo",
         image: food_8,
-        price: 1000,
         description: "Classic Filipino pork dish, marinated in soy sauce, vinegar, and garlic",
         category: "Pork"
     }, {
         _id: "9",
         name: "Crispy Pata",
         image: food_9,
-        price: 1000,
         description: "Deep-fried pork knuckle, crispy on the outside, tender inside",
         category: "Pork"
     }, {
         _id: "10",
         name: "Humba",
         image: food_10,
-        price: 1000,
         description: "Sweet and savory braised pork belly with a hint of sweetness",
         category: "Pork"
     }, {
         _id: "11",
         name: "Menudo",
         image: food_11,
-        price: 1000,
         description: "A hearty stew of pork, liver, and vegetables in a tomato-based sauce",
         category: "Pork"
     }, {
         _id: "12",
         name: "Sweet & Sour",
         image: food_12,
-        price: 1000,
         description: "Tender pork chunks coated in a tangy, sweet and sour sauce",
         category: "Pork"
     }, {
         _id: "13",
         name: "Pork Steak",
         image: food_13,
-        price: 1000,
         description: "Juicy pork steaks marinated and pan-seared to perfection",
         category: "Pork"
     }, {
         _id: "14",
         name: "Grilled Pork Belly",
         image: food_14,
-        price: 1000,
         description: "Smoky and flavorful pork belly grilled to perfection",
         category: "Pork"
     }, {
         _id: "15",
         name: "Grilled Pork Chop",
         image: food_15,
-        price: 1000,
         description: "Thick, juicy pork chops grilled with a savory seasoning",
         category: "Pork"
     }, {
         _id: "16",
         name: "Pork Sisig",
         image: food_16,
-        price: 1000,
         description: "A sizzling dish of chopped pork, often seasoned with citrus and chili",
         category: "Pork"
     }, {
         _id: "17",
         name: "Fried Chicken",
         image: food_17,
-        price: 1000,
         description: "Crispy, golden-brown chicken with a juicy interior",
         category: "Chicken"
     }, {
         _id: "18",
         name: "Fried Chicken Pandan",
         image: food_18,
-        price: 1000,
         description: "Aromatic chicken wrapped in pandan leaves and fried",
         category: "Chicken"
     }, {
         _id: "19",
         name: "Chicken Curry",
         image: food_19,
-        price: 1000,
         description: "Creamy and mildly spiced curry with tender chicken pieces",
         category: "Chicken"
     }, {
         _id: "20",
         name: "Chicken Adobo",
         image: food_20,
-        price: 1000,
         description: "Chicken simmered in soy sauce, vinegar, and garlic—a Filipino favorite",
         category: "Chicken"
     }, {
         _id: "21",
         name: "Embutido",
         image: food_21,
-        price: 1000,
         description: "A Filipino-style meatloaf made with ground chicken and vegetables",
         category: "Chicken"
     }, {
         _id: "22",
         name: "Cordon Bleu",
         image: food_22,
-        price: 1000,
         description: "Breaded chicken stuffed with ham and cheese, then baked",
         category: "Chicken"
     }, {
         _id: "23",
         name: "Baked mushroon sauce",
         image: food_23,
-        price: 1000,
         description: "Juicy baked chicken topped with a rich mushroom sauce",
         category: "Chicken"
     }, {
         _id: "24",
         name: "Pinakbet",
         image: food_24,
-        price: 700,
         description: "Savory vegetable stew with shrimp paste, squash, and eggplant",
         category: "Vegetable"
     }, {
         _id: "25",
         name: "Chopsuey",
         image: food_25,
-        price: 700,
         description: "A stir-fried medley of mixed vegetables in a light, savory sauce",
         category: "Vegetable"
     }, {
         _id: "26",
         name: "Buttered Vegetable",
         image: food_26,
-        price: 700,
         description: "Assorted vegetables sautéed in butter for a rich flavor",
         category: "Vegetable"
     }, {
         _id: "27",
         name: "Cabbage Roll",
         image: food_27,
-        price: 800,
         description: "Ground meat and vegetables wrapped in cabbage leaves and simmered",
         category: "Vegetable"
     }, {
         _id: "28",
         name: "Eggplant Curry",
         image: food_28,
-        price: 700,
         description: "Tender eggplant in a rich and aromatic curry sauce",
         category: "Vegetable"
     }, {
         _id: "29",
         name: "Dynamite",
         image: food_29,
-        price: 700,
         description: "Spicy green chili stuffed with meat and cheese, then deep-fried",
         category: "Vegetable"
     }, {
         _id: "30",
         name: "Breaded Fish Fillet",
         image: food_30,
-        price: 950,
         description: "Crispy, golden fillets of fish, perfect for dipping",
         category: "Seafoods"
     }, {
         _id: "31",
         name: "Calamares",
         image: food_31,
-        price: 1000,
         description: "Tender squid rings, battered and deep-fried to perfection",
         category: "Seafoods"
     }, {
         _id: "32",
         name: "Fish Fillet with Sweet & Sour",
         image: food_32,
-        price: 950,
         description: "Fried fish fillets topped with a tangy sweet and sour sauce",
         category: "Seafoods"
     }, {
         _id: "33",
         name: "Steam Fish",
         image: food_33,
-        price: 1200,
         description: "Delicately steamed fish, flavored with ginger and soy sauce",
         category: "Seafoods"
     }, {
         _id: "34",
         name: "Spicy Shrimp",
         image: food_34,
-        price: 950,
         description: "Juicy shrimp cooked in a spicy and flavorful sauce",
         category: "Seafoods"
     }, {
         _id: "35",
         name: "Bam e",
         image: food_35,
-        price: 800,
         description: "Filipino noodles with egg noodles, vermicelli, meats, and vegetables",
         category: "Noodles"
     }, {
         _id: "36",
         name: "Bihon Guisado",
         image: food_36,
-        price: 750,
         description: "Stir-fried rice noodles with vegetables, meat, and soy sauce",
         category: "Noodles"
     }, {
         _id: "37",
         name: "Pansit Guisado",
         image: food_37,
-        price: 750,
         description: "Savory stir-fried noodles mixed with vegetables and meat",
         category: "Noodles"
     }, {
         _id: "38",
         name: "Spaghetti",
         image: food_38,
-        price: 800,
         description: "Classic pasta in a rich tomato sauce, often with ground meat",
         category: "Noodles"
     }, {
         _id: "39",
         name: "Carbonara",
         image: food_39,
-        price: 800,
         description: "Creamy pasta with bacon and a rich, egg-based sauce",
         category: "Noodles"
     }, {
         _id: "40",
         name: "Lasagna",
         image: food_40,
-        price: 1200,
         description: "Layers of pasta, meat sauce, and cheese baked to a bubbly perfection",
         category: "Noodles"
     }

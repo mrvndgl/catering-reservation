@@ -42,21 +42,38 @@
 }
 .create-reservation-btn{
     border: none;
-    color: #747474;
+    color: #ffffff;
     font-weight: 500;
     padding: 1vw 2.3vw;
-    background-color: #ffffff;  
+    background-color: #4CAF50;;  
     font-size: max(1vw,13px);
     border-radius: 50px;
     align-self: flex-start;
     cursor: pointer;
+    transition: background-color 0.3s ease;
 }
-@media (max-width:1050px) {
+.create-reservation-btn:hover {
+    background-color: #45a049;
+}
+
+.create-reservation-btn:focus {
+    outline: none;
+    box-shadow: 0 0 0 3px rgba(76, 175, 80, 0.5);
+}
+
+
+/* Medium screens (up to 1050px) */
+@media (max-width: 1050px) {
     .header-contents{
         max-width: 45%;
     }
+    .header-contents h2 {
+        font-size: max(3.5vw, 20px);
+    }
 }
-@media (max-width:750px) {
+
+/* Small screens (up to 750px) */
+@media (max-width: 750px) {
     .header-contents{
         max-width: 55%;
     }
@@ -65,5 +82,27 @@
     }
     .header-contents button{
         padding: 2vw 4vw;
+    }
+    .header-contents h2 {
+        font-size: max(6vw, 18px);
+    }
+}
+
+/* Extra small screens (up to 480px) */
+@media (max-width: 480px) {
+    .header {
+        height: 50vw; /* Increase height for better visibility */
+    }
+    .header-contents {
+        max-width: 70%;
+        left: 4vw;
+        bottom: 8%;
+    }
+    .header-contents h2 {
+        font-size: max(7vw, 16px);
+    }
+    .create-reservation-btn {
+        padding: 3vw 5vw;
+        font-size: max(2vw, 12px);
     }
 }

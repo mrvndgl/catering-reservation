@@ -1,30 +1,37 @@
 .navbar {
-    padding: 20px 0px;
+    padding: 20px 0;
     display: flex;
     justify-content: space-between;
     align-items: center;
+    padding: 0 20px;
+    top: 0; 
+    background-color: #F1F8E8; 
+    z-index: 1000; 
 }
-.navbar .logo{
+.navbar .logo {
     width: 150px;
 }
-.navbar-menu{
+.navbar-menu {
     display: flex;
     list-style: none;
     gap: 20px;
     color: #49557e;
     font-size: 18px;
+    margin: 0 auto;
+    padding: 0;
 }
-.navbar-right{
+.navbar-right {
     display: flex;
     align-items: center;
     gap: 40px;
 }
-.navbar li{
+.navbar li {
     cursor: pointer;
 }
-.navbar .active{
+
+.navbar .active {
     padding-bottom: 2px;
-    border-bottom: 2px solid #49667e;
+    border-bottom: 3px solid #45a049;
 }
 @media (max-width:1050px) {
     .navbar .logo{

@@ -8,6 +8,9 @@
     padding: 20px 8vw;
     padding-top: 80px;
     margin-top: 100px;
+    width: 100vw; /* Use viewport width instead of percentage */
+    margin-left: calc(-50vw + 50%); /* This compensates for the parent's width */
+    box-sizing: border-box;
 }
 .footer-content{
     width: 100%;

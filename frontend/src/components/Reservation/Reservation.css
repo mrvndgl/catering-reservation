@@ -1,17 +1,19 @@
-.reservation{
-    background-color: #ffffff;
+.reservation {
+    background-color: #F1F8E8;
     padding: 20px;
     border-radius: 15px 6px 6px 15px;
     width: 100%;
     max-width: 80vw;
     max-height: 90vh;
     overflow-y: auto;
+    overflow-x: hidden; /* Prevent horizontal scrolling */
     opacity: 0;
     transform: scale(0.9);
     transition: opacity 0.3s ease, transform 0.3s ease;
     position: relative;
 }
-.reservation-container{
+
+.reservation-container {
     max-width: 1600px;
     width: 90%;
     margin: 0 auto;
@@ -19,26 +21,31 @@
     flex-direction: column;
     gap: 10px;
 }
-.reservation-popup-title{
+
+.reservation-popup-title {
     display: flex;
     justify-content: space-between;
     align-items: center;
     margin-bottom: 20px;
 }
-.reservation-popup-title img{
+
+.reservation-popup-title img {
     cursor: pointer;
     width: 24px;
     height: 24px;
 }
-.reservation-tables{
+
+.reservation-tables {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); /* Use auto-fit to maintain individual table sizes */
     gap: 25px;
     margin-bottom: 30px;
 }
-.reservation-note p{
+
+.reservation-note p {
     font-style: italic;
 }
+
 table {
     width: 100%;
     border-collapse: separate;
@@ -108,10 +115,12 @@ input[type="checkbox"]:checked::after {
 .food-price {
     font-weight: bold;
 }
-.fade-in{
+
+.fade-in {
     opacity: 1;
     transform: scale(1);
 }
+
 .checkout {
     display: flex;
     flex-direction: column;
@@ -119,11 +128,13 @@ input[type="checkbox"]:checked::after {
     margin-top: 20px;
     margin-bottom: 20px;
 }
-.checkout p{
+
+.checkout p {
     font-weight: bold;
     font-size: 20px;
     margin-bottom: 10px;
 }
+
 .total-price {
     font-size: 18px;
     font-weight: bold;
@@ -150,30 +161,15 @@ input[type="checkbox"]:checked::after {
     outline: none;
     box-shadow: 0 0 0 3px rgba(76, 175, 80, 0.5);
 }
-::-webkit-scrollbar {
-    width: 10px;
-}
 
-::-webkit-scrollbar-track {
-    background: #ffffff;;
-    border-radius: 10px;
-}
-
-::-webkit-scrollbar-thumb {
-    background: #45a049;;
-    border-radius: 10px;
-}
-
-::-webkit-scrollbar-thumb:hover {
-    background: #555;
-}
+/* Media Queries for Responsive Layout */
 @media (max-width: 1200px) {
     .reservation-container {
         width: 95%;
     }
-    
+
     .reservation-tables {
-        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); /* Adjust minimum width */
     }
 }
 
@@ -181,9 +177,9 @@ input[type="checkbox"]:checked::after {
     .reservation-container {
         width: 100%;
     }
-    
+
     .reservation-tables {
-        grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+        grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); /* Adjust minimum width */
         gap: 15px;
     }
 }
@@ -195,7 +191,7 @@ input[type="checkbox"]:checked::after {
     }
 
     .reservation-tables {
-        grid-template-columns: 1fr;
+        grid-template-columns: 1fr; /* Single column for small screens */
         gap: 10px;
     }
     
@@ -210,7 +206,7 @@ input[type="checkbox"]:checked::after {
     .reservation {
         padding: 10px;
     }
-    
+
     th, td {
         font-size: 14px;
     }
@@ -224,3 +220,4 @@ input[type="checkbox"]:checked::after {
         font-size: 14px;
     }
 }
+    

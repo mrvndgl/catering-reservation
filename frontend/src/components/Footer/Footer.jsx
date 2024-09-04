@@ -1,16 +1,20 @@
-import React from 'react';
-import './Footer.css';
-import { assets } from '../../assets/assets';
+import React from "react";
+import "./Footer.css";
+import { assets } from "../../assets/assets";
 
 const Footer = () => {
   return (
-    <div className='footer' id='footer'>
+    <div className="footer" id="footer">
       <div className="footer-content">
         <div className="footer-content-left">
           <img src={assets.logo} alt="" />
           <p>Macky's Food Service • Your partner in every occasion</p>
           <div className="footer-social-icons">
-            <a href="https://web.facebook.com/profile.php?id=100064143906138" target="_blank" rel="noopener noreferrer">
+            <a
+              href="https://web.facebook.com/profile.php?id=100064143906138"
+              target="_blank"
+              rel="noopener noreferrer"
+            >
               <img src={assets.facebook_icon} alt="Facebook" />
             </a>
           </div>
@@ -31,9 +35,11 @@ const Footer = () => {
         </div>
       </div>
       <hr />
-      <p className="footer-copyright">Copyright 2020 © Macky's Food Service - All Rights Reserved</p>
+      <p className="footer-copyright">
+        Copyright 2020 © Macky's Food Service - All Rights Reserved
+      </p>
     </div>
   );
-}
+};
 
 export default Footer;

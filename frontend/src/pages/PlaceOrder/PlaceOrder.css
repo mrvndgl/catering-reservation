@@ -9,6 +9,11 @@
     width: 100%;
     max-width: max(30%,500px);
 }
+.place-order-left img{
+    padding: 10px;
+    width: 50px;
+    cursor: pointer;
+}
 .place-order-left .title{
     font-size: 30px;
     font-weight: 600;
@@ -95,6 +100,180 @@
     margin-top: 10px;
     cursor: pointer;
 }
+.note-container{
+    width: 500px;
+    margin: 20px auto;
+}
+.note-input{
+    width: 100%;
+    height: 200px;
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    font-family: Poppins;
+    font-size: 14px;
+    resize: vertical;
+}
+.selected-items {
+    font-size: 20px;
+}
+
+.selected-items-list {
+    padding-left: 0;
+    margin: 0;
+}
+
+.selected-items-list ul {
+    list-style-type: none; /* Remove bullet points */
+    padding-left: 0;
+    margin: 0;
+}
+
+.selected-items-list li {
+    font-weight: bold; /* Make food names bold */
+    display: flex;
+    align-items: center;
+    padding: 5px 0;
+}
+
+.selected-items-list li .food-name {
+    margin-right: 10px;
+}
+
+.selected-items-list li .dots {
+    width: 100px; /* Set fixed width for dotted line */
+    border-bottom: 1px dotted black;
+    margin: 0 10px;
+    flex-shrink: 0; /* Prevent shrinking of the dotted line */
+}
+
+.selected-items-list li .food-price {
+    font-style: italic; /* Make price italic */
+    white-space: nowrap;
+}
+
+.place-order-right hr {
+    margin-top: 20px;
+}
+
+.subtotal-section {
+    margin-top: 0px;
+    padding-top: 10px;
+}
+
+.subtotal-section .subtotal {
+    font-size: 18px;
+    font-weight: 600;
+    text-align: right;
+}
+
+.total-section .total {
+    font-size: 18px;
+    font-weight: bold;
+    text-align: right;
+}
+
+.summary-button {
+    display: flex;
+    justify-content: center;
+    margin-top: 20px;
+}
+
+.place-order-right .remove-item {
+  background: none;
+  border: none;
+  padding: 0;
+  cursor: pointer;
+  width: 20px; 
+  height: 12px; 
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-left: 12px; 
+}
+
+.place-order-right .remove-item img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+}
+
+.summary-button .cancel-button,
+.summary-button .payment-button {
+    margin: 0 5px;
+    border-radius: 50px;
+    background-color: #4CAF50;
+    color: white;
+    padding: 10px 20px;
+    font-size: 16px;
+    font-weight: bold;
+    text-transform: uppercase;
+    border: none;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.summary-button .cancel-button:hover,
+.summary-button .payment-button:hover {
+    background-color: #45a049;
+}
+
+.summary-button .cancel-button:active,
+.summary-button .payment-button:active {
+    transform: translateY(2px);
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+.cancellation-warning {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background-color: white;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    z-index: 1000;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+  
+.cancellation-warning button {
+    margin: 0 10px;
+    margin-top: 10px;
+    border-radius: 50px;
+    background-color: #4CAF50;
+    color: white;
+    padding: 10px 20px;
+    font-size: 16px;
+    font-weight: bold;
+    text-transform: uppercase;
+    border: none;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+  
+.cancellation-warning button:hover {
+    background-color: #45a049;
+}
+  
+  .cancellation-warning button:active {
+    transform: translateY(2px);
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+  
+  .cancellation-warning-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.5);
+    z-index: 999;
+}
+
 @media (max-width: 1200px) {
     .place-order {
         flex-direction: column;

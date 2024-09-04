@@ -1,13 +1,13 @@
-import React, { useState } from 'react'
-import './Home.css'
-import Header from '../../components/Header/Header'
-import { ExploreMenu } from '../../components/ExploreMenu/ExploreMenu'
-import FoodDisplay from '../../components/FoodDisplay/FoodDisplay'
-import Reservation from '../../components/Reservation/Reservation' 
+import React, { useState } from "react";
+import "./Home.css";
+import Header from "../../components/Header/Header";
+import { ExploreMenu } from "../../components/ExploreMenu/ExploreMenu";
+import FoodDisplay from "../../components/FoodDisplay/FoodDisplay";
+import Reservation from "../../components/Reservation/Reservation";
 
 const Home = () => {
-  const [showReservation, setShowReservation] = useState(false)
-  const [category, setCategory] = useState("All")
+  const [showReservation, setShowReservation] = useState(false);
+  const [category, setCategory] = useState("All");
 
   return (
     <div className="home">
@@ -16,11 +16,11 @@ const Home = () => {
       <FoodDisplay category={category} />
       {showReservation && (
         <div className="reservation-overlay">
-          <Reservation setShowReservation={setShowReservation}/>
+          <Reservation setShowReservation={setShowReservation} />
         </div>
       )}
     </div>
-  )
-}
+  );
+};
 
-export default Home
+export default Home;
