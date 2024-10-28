@@ -17,6 +17,10 @@ const PlaceOrder = () => {
   const [subtotal, setSubtotal] = useState(0);
   const [formErrors, setFormErrors] = useState({});
   const [showCancellationWarning, setShowCancellationWarning] = useState(false);
+  const [showFoodMenu, setShowFoodMenu] = useState(false);
+  const [availableFoodItems, setAvailableFoodItems] = useState(
+    food_list.filter((item) => !initialSelectedItems.includes(item))
+  );
 
   const timeSlots = [
     { label: "Lunch (11:00 AM - 12:00 PM)", value: "lunch" },
@@ -32,12 +36,29 @@ const PlaceOrder = () => {
 
   const calculateSubtotal = () => {
     const baseAmount = 17500;
-    const pax = parseInt(selectedPax.split(" ")[0]) || 50; // Extract the number of pax from the selected value
+    const pax = parseInt(selectedPax.split(" ")[0]) || 50;
 
-    // Calculate the total based on the number of pax
-    const total = baseAmount + (pax - 50) * 350;
+    // Calculate base amount based on number of pax
+    const paxTotal = baseAmount + (pax - 50) * 350;
 
+    // Calculate additional food items cost (35 pesos per item per person)
+    const additionalItemsCost = selectedItems.length * 35 * pax;
+
+    const total = paxTotal + additionalItemsCost;
     setSubtotal(total);
+  };
+
+  const handleAddFoodItem = (item) => {
+    setSelectedItems((prev) => [...prev, item]);
+    setAvailableFoodItems((prev) =>
+      prev.filter((foodItem) => foodItem !== item)
+    );
+    setShowFoodMenu(false);
+  };
+
+  const handleFoodItemRemove = (itemToRemove) => {
+    setSelectedItems((prev) => prev.filter((item) => item !== itemToRemove));
+    setAvailableFoodItems((prev) => [...prev, itemToRemove]);
   };
 
   const handleSubmit = (e) => {
@@ -58,7 +79,7 @@ const PlaceOrder = () => {
   };
 
   const handleReturn = () => {
-    navigate("/reservation", { state: { selectedItems } });
+    navigate("/");
   };
 
   const handleCancelReservation = () => {
@@ -71,12 +92,6 @@ const PlaceOrder = () => {
 
   const cancelCancelReservation = () => {
     setShowCancellationWarning(false);
-  };
-
-  const handleFoodItemRemove = (itemToRemove) => {
-    setSelectedItems((prevItems) =>
-      prevItems.filter((item) => item !== itemToRemove)
-    );
   };
 
   return (
@@ -155,7 +170,16 @@ const PlaceOrder = () => {
         <div className="order-total">
           <p className="title">Order Summary</p>
           <div className="selected-items-list">
-            <p className="selected-items">Selected Items:</p>
+            <div className="selected-items-header">
+              <p className="selected-items">Selected Items:</p>
+              <button
+                type="button"
+                className="add-food-btn"
+                onClick={() => setShowFoodMenu(true)}
+              >
+                Add Item
+              </button>
+            </div>
             <ul>
               {selectedItems.length > 0 ? (
                 selectedItems.map((item, index) => (
@@ -163,6 +187,7 @@ const PlaceOrder = () => {
                     <span className="food-name">{item.name}</span>
                     <span className="dots"></span>
                     <button
+                      type="button"
                       className="remove-item"
                       onClick={() => handleFoodItemRemove(item)}
                     >
@@ -182,42 +207,88 @@ const PlaceOrder = () => {
             <p className="subtotal">
               Subtotal: PHP {subtotal.toLocaleString()}
             </p>
+            {selectedPax && selectedItems.length > 0 && (
+              <p className="price-breakdown">
+                Additional items cost: PHP{" "}
+                {(
+                  selectedItems.length *
+                  35 *
+                  parseInt(selectedPax)
+                ).toLocaleString()}
+                <br />
+                <small>
+                  (PHP 35 × {selectedItems.length} items × {selectedPax})
+                </small>
+              </p>
+            )}
           </div>
           <div className="total-section">
             <p className="total">Total: PHP {subtotal.toFixed(2)}</p>
           </div>
           <div className="summary-button">
-            <button className="cancel-button" onClick={handleCancelReservation}>
+            <button
+              className="cancel-button"
+              onClick={handleCancelReservation}
+              type="button"
+            >
               CANCEL RESERVATION
             </button>
             <button className="payment-button" type="submit">
-              PROCEED TO PAYMENT
+              CONFIRM RESERVATION
             </button>
           </div>
-          {showCancellationWarning && (
-            <React.Fragment>
-              <div className="cancellation-warning">
-                <p>Are you sure you want to cancel the reservation?</p>
-                <div>
-                  <button
-                    className="yes-button"
-                    onClick={confirmCancelReservation}
-                  >
-                    Yes, Cancel
-                  </button>
-                  <button
-                    className="no-button"
-                    onClick={cancelCancelReservation}
-                  >
-                    No, Keep Reservation
-                  </button>
-                </div>
-              </div>
-              <div className="cancellation-warning-overlay"></div>
-            </React.Fragment>
-          )}
         </div>
       </div>
+
+      {showFoodMenu && (
+        <div className="food-menu-modal">
+          <div className="food-menu-content">
+            <h3>Add Food Items</h3>
+            <div className="available-items-list">
+              {availableFoodItems.map((item, index) => (
+                <div key={index} className="available-item">
+                  <span>{item.name}</span>
+                  <button
+                    type="button"
+                    onClick={() => handleAddFoodItem(item)}
+                    className="add-item-btn"
+                  >
+                    Add
+                  </button>
+                </div>
+              ))}
+            </div>
+            <button
+              type="button"
+              className="close-menu-btn"
+              onClick={() => setShowFoodMenu(false)}
+            >
+              Close
+            </button>
+          </div>
+          <div
+            className="modal-overlay"
+            onClick={() => setShowFoodMenu(false)}
+          ></div>
+        </div>
+      )}
+
+      {showCancellationWarning && (
+        <React.Fragment>
+          <div className="cancellation-warning">
+            <p>Are you sure you want to cancel the reservation?</p>
+            <div>
+              <button className="yes-button" onClick={confirmCancelReservation}>
+                Yes, Cancel
+              </button>
+              <button className="no-button" onClick={cancelCancelReservation}>
+                No, Keep Reservation
+              </button>
+            </div>
+          </div>
+          <div className="cancellation-warning-overlay"></div>
+        </React.Fragment>
+      )}
     </form>
   );
 };

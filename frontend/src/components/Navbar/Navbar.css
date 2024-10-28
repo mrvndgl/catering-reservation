@@ -1,38 +1,53 @@
 .navbar {
-    padding: 20px 0;
     display: flex;
-    justify-content: space-between;
+    justify-content: flex-start;
     align-items: center;
-    padding: 0 20px;
-    top: 0; 
-    background-color: #F1F8E8; 
-    z-index: 1000; 
+    padding: 15px 60px;
+    background: white;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    z-index: 1000;
+    height: 80px; /* Added fixed height for navbar */
 }
-.navbar .logo {
-    width: 150px;
+
+.logo {
+    height: 75px;
+    width: auto;
+    object-fit: contain;
+    margin-right: auto;
 }
 .navbar-menu {
     display: flex;
-    list-style: none;
-    gap: 20px;
-    color: #49557e;
-    font-size: 18px;
-    margin: 0 auto;
-    padding: 0;
-}
-.navbar-right {
-    display: flex;
+    gap: 30px;
     align-items: center;
-    gap: 40px;
+    position: absolute;
+    left: 50%;
+    transform: translateX(-50%);
+    list-style: none;
+}
+
+.navbar-menu a {
+    text-decoration: none;
+    color: #949292;
+    font-size: 18px;
+    font-weight: 400;
+    transition: color 0.3s ease;
+}
+.navbar-menu a:hover {
+    color: #4CAF50;
+}
+.navbar .active {
+    color: #4CAF50;
+    padding-bottom: 2px;
+    border-bottom: 3px solid #4CAF50;
 }
 .navbar li {
     cursor: pointer;
 }
 
-.navbar .active {
-    padding-bottom: 2px;
-    border-bottom: 3px solid #45a049;
-}
 @media (max-width:1050px) {
     .navbar .logo{
         width: 140px;

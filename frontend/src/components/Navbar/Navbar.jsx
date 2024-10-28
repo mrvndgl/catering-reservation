@@ -10,27 +10,33 @@ const Navbar = () => {
     <div className="navbar">
       <img className="logo" src={assets.logo} alt="" />
       <ul className="navbar-menu">
-        <Link
-          href="/"
-          onClick={() => setMenu("Home")}
-          className={menu === "Home" ? "active" : ""}
-        >
-          Home
-        </Link>
-        <a
-          href="#explore-menu"
-          onClick={() => setMenu("Menu")}
-          className={menu === "Menu" ? "active" : ""}
-        >
-          Menu
-        </a>
-        <a
-          href="#footer"
-          onClick={() => setMenu("Contact-us")}
-          className={menu === "Contact-us" ? "active" : ""}
-        >
-          Contact us
-        </a>
+        <li>
+          <a
+            href="#header"
+            onClick={() => setMenu("Home")}
+            className={menu === "Home" ? "active" : ""}
+          >
+            Home
+          </a>
+        </li>
+        <li>
+          <a
+            href="#explore-menu"
+            onClick={() => setMenu("Menu")}
+            className={menu === "Menu" ? "active" : ""}
+          >
+            Menu
+          </a>
+        </li>
+        <li>
+          <a
+            href="#footer"
+            onClick={() => setMenu("Contact-us")}
+            className={menu === "Contact-us" ? "active" : ""}
+          >
+            Contact us
+          </a>
+        </li>
       </ul>
     </div>
   );

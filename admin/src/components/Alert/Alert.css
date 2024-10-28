@@ -1,0 +1,18 @@
+.alert-default {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: #ebf8ff; /* Light blue background */
+    border: 1px solid #bee3f8; /* Light blue border */
+    color: #2b6cb0; /* Dark blue text */
+  }
+  
+  .alert-destructive {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 15px;
+    background-color: #fee2e2; /* Light red background */
+    border: 1px solid #fecdd4; /* Light red border */
+    color: #c53030; /* Dark red text */
+  }
