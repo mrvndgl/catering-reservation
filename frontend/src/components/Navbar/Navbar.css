@@ -3,22 +3,33 @@
     justify-content: flex-start;
     align-items: center;
     padding: 15px 60px;
-    background: white;
-    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
     position: fixed;
     top: 0;
     left: 0;
     right: 0;
     z-index: 1000;
-    height: 80px; /* Added fixed height for navbar */
+    height: 80px;
+    transition: background 0.3s ease-in-out, box-shadow 0.3s ease; 
 }
 
-.logo {
-    height: 75px;
-    width: auto;
-    object-fit: contain;
-    margin-right: auto;
+.navbar.scrolled {
+    background: #45a049; 
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
 }
+
+.navbar.scrolled a {
+    color: #d5d5d5;
+}
+
+.navbar.scrolled .active {
+    color: white;
+    border-bottom: 3px solid white;
+}
+
+.navbar.scrolled a:hover {
+    color: white;
+}
+
 .navbar-menu {
     display: flex;
     gap: 30px;
@@ -31,22 +42,27 @@
 
 .navbar-menu a {
     text-decoration: none;
-    color: #949292;
+    color: #808080;
     font-size: 18px;
     font-weight: 400;
     transition: color 0.3s ease;
 }
+
 .navbar-menu a:hover {
-    color: #4CAF50;
+    color: #45a049;
 }
+
 .navbar .active {
     color: #4CAF50;
     padding-bottom: 2px;
     border-bottom: 3px solid #4CAF50;
 }
+
 .navbar li {
     cursor: pointer;
 }
+
+  
 
 @media (max-width:1050px) {
     .navbar .logo{

@@ -3,6 +3,7 @@ import cors from "cors";
 import { connectDB } from "./config/db.js";
 import foodRouter from "./routes/foodRoute.js";
 import userRouter from "./routes/userRoute.js";
+import reservationRouter from "./routes/reservationRoute.js";
 import path from "path";
 import { fileURLToPath } from "url";
 import "dotenv/config";
@@ -19,7 +20,7 @@ const port = process.env.PORT || 4000;
 app.use(express.json());
 app.use(
   cors({
-    origin: "http://localhost:5173",
+    origin: ["http://localhost:5173", "http://localhost:5174"],
     credentials: true,
   })
 );
@@ -29,8 +30,9 @@ connectDB();
 
 // API endpoints
 app.use("/api/food", foodRouter);
-app.use("/images", express.static(path.join(__dirname, "uploads")));
 app.use("/api/users", userRouter);
+app.use("/api/reservations", reservationRouter); // Add the reservation endpoint
+app.use("/images", express.static(path.join(__dirname, "uploads")));
 
 // Error handling middleware
 app.use((err, req, res, next) => {

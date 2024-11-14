@@ -5,24 +5,28 @@ import Sidebar from "./components/Sidebar/Sidebar";
 import Accounts from "./pages/Accounts/Accounts";
 import Add from "./pages/Add/Add";
 import ListItems from "./pages/ListItems/ListItems";
-import Reservations from "./pages/Reservations/Reservations";
 import Login from "./pages/LogIn/LogIn";
 import Alert from "./components/Alert/Alert";
+import ViewReservations from "./pages/ViewReservations/ViewReservations";
+import Transactions from "./pages/Transactions/Transactions";
+import Feedbacks from "./pages/Feedbacks/Feedbacks";
 
 const App = () => {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState("");
   const [profilePhoto, setProfilePhoto] = useState(null);
   const navigate = useNavigate();
 
-  // Check for existing token on app load
+  // Check authentication status on mount
   useEffect(() => {
     const token = localStorage.getItem("token");
     if (token) {
       setIsAuthenticated(true);
-      // Optionally, verify the token with your backend here
+      navigate("/reservations");
     }
-  }, []);
+    setIsLoading(false);
+  }, [navigate]);
 
   const handleLogin = async (username, password) => {
     try {
@@ -37,9 +41,9 @@ const App = () => {
       const data = await response.json();
 
       if (response.ok) {
+        localStorage.setItem("token", data.token);
         setIsAuthenticated(true);
         setError("");
-        localStorage.setItem("token", data.token);
         navigate("/reservations");
       } else {
         throw new Error(data.message || "Login failed");
@@ -50,10 +54,10 @@ const App = () => {
   };
 
   const handleLogout = () => {
+    localStorage.removeItem("token");
     setIsAuthenticated(false);
     setError("");
-    setProfilePhoto(null); // Clear the profile photo
-    localStorage.removeItem("token");
+    setProfilePhoto(null);
     navigate("/login");
   };
 
@@ -67,8 +71,6 @@ const App = () => {
         const reader = new FileReader();
         reader.onload = (e) => {
           setProfilePhoto(e.target.result);
-          // TODO: Implement server-side upload
-          // uploadProfilePhoto(e.target.result);
         };
         reader.readAsDataURL(file);
       }
@@ -76,24 +78,9 @@ const App = () => {
     fileInput.click();
   };
 
-  // TODO: Implement this function to upload the photo to your server
-  // const uploadProfilePhoto = async (photoData) => {
-  //   try {
-  //     const response = await fetch('http://localhost:4000/api/users/profile-photo', {
-  //       method: 'POST',
-  //       headers: {
-  //         'Content-Type': 'application/json',
-  //         'Authorization': `Bearer ${localStorage.getItem('token')}`
-  //       },
-  //       body: JSON.stringify({ photo: photoData })
-  //     });
-  //     if (!response.ok) {
-  //       throw new Error('Failed to upload photo');
-  //     }
-  //   } catch (error) {
-  //     setError('Failed to upload profile photo');
-  //   }
-  // };
+  if (isLoading) {
+    return <div>Loading...</div>;
+  }
 
   return (
     <div>
@@ -114,39 +101,78 @@ const App = () => {
             path="/"
             element={
               isAuthenticated ? (
-                <Navigate to="/reservations" />
+                <Navigate to="/reservations" replace />
               ) : (
-                <Navigate to="/login" />
+                <Navigate to="/login" replace />
               )
             }
           />
+
           <Route
             path="/login"
             element={
               isAuthenticated ? (
-                <Navigate to="/reservations" />
+                <Navigate to="/" replace />
               ) : (
                 <Login onLogin={handleLogin} />
               )
             }
           />
+
           <Route
             path="/reservations"
             element={
-              isAuthenticated ? <Reservations /> : <Navigate to="/login" />
+              isAuthenticated ? (
+                <ViewReservations />
+              ) : (
+                <Navigate to="/reservations" replace />
+              )
             }
           />
+
+          <Route
+            path="/transactions"
+            element={
+              isAuthenticated ? (
+                <Transactions />
+              ) : (
+                <Navigate to="/transactions" replace />
+              )
+            }
+          />
+
+          <Route
+            path="/feedbacks"
+            element={
+              isAuthenticated ? (
+                <Feedbacks />
+              ) : (
+                <Navigate to="/feedbacks" replace />
+              )
+            }
+          />
+
           <Route
             path="/accounts"
-            element={isAuthenticated ? <Accounts /> : <Navigate to="/login" />}
+            element={
+              isAuthenticated ? (
+                <Accounts />
+              ) : (
+                <Navigate to="/accounts" replace />
+              )
+            }
           />
+
           <Route
             path="/add"
-            element={isAuthenticated ? <Add /> : <Navigate to="/login" />}
+            element={isAuthenticated ? <Add /> : <Navigate to="/add" replace />}
           />
+
           <Route
             path="/list-items"
-            element={isAuthenticated ? <ListItems /> : <Navigate to="/login" />}
+            element={
+              isAuthenticated ? <ListItems /> : <Navigate to="/login" replace />
+            }
           />
         </Routes>
       </div>

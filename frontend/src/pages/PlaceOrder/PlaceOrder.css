@@ -5,25 +5,71 @@
     gap: 40px;
     margin-top: 100px;
 }
-.place-order-left{
-    width: 100%;
-    max-width: max(30%,500px);
-}
+
 .place-order-left img{
     padding: 10px;
     width: 50px;
     cursor: pointer;
 }
-.place-order-left .title{
-    font-size: 30px;
-    font-weight: 600;
-    margin-bottom: 30px;
+.place-order-left .multi-fields input[type="text"],
+.place-order-left .multi-fields select {
+    width: 100%;
+    padding: 8px 10px;
+    margin-bottom: 15px;
+    font-size: 16px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
 }
-.place-order-left .title-venue{
+
+.place-order-left .city-select,
+.place-order-left .province-select {
+    width: calc(50% - 10px); /* Ensures they sit side by side with a small gap */
+    font-size: 16px;
+    padding: 8px 10px;
+    margin-right: 10px;
+}
+
+.phone-input {
+    width: 100%; /* Make the phone number input full-width */
+    padding: 8px 10px;
+    margin-bottom: 15px; /* Adds space below the phone number input */
+    font-size: 16px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+}
+
+.pax-select {
+    width: 100px; 
+    padding: 8px 10px;
+    margin-bottom: 15px;
+    margin-left: 30px;
+    font-size: 16px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+}
+
+.place-order-left .multi-fields input[type="text"] {
+    width: 80%;
+}
+
+.place-order-left .title-venue {
     font-size: 25px;
     font-weight: 500;
     margin-top: 10px;
 }
+
+.place-order-left .title {
+    font-size: 30px;
+    font-weight: 600;
+    margin-bottom: 30px;
+}
+
+.place-order-left .multi-fields {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+}
+
 .place-order-left .title-date{
     font-size: 25px;
     font-weight: 500;
@@ -40,7 +86,7 @@
     padding: 10px;
     border: 1px solid #c5c5c5;
     border-radius: 4px;
-    outline-color: green;
+    outline-color: #4CAF50;
 }
 .place-order .pax-select{
     width: 40%;
@@ -48,17 +94,18 @@
     margin-top: 5px;
     border: 1px solid #c5c5c5;
     border-radius: 4px;
-    font-size: 13px;
+    font-size: 15px;
 }
 .place-order-left .multi-fields{
     display: flex;
     gap: 5px;
 }
 .place-order-center .multi-fields{
-    width: 100%;
+    width: 50%;
     display: flex;
     gap: 5px;
 }
+
 .time-slot-select{
     width: 60%;
     padding: 10px;
@@ -102,7 +149,8 @@
 }
 .note-container{
     width: 500px;
-    margin: 20px auto;
+    margin: 20px start;
+    margin-top: 20px;
 }
 .note-input{
     width: 100%;
@@ -113,6 +161,10 @@
     font-family: Poppins;
     font-size: 14px;
     resize: vertical;
+}
+.note-container :focus{
+    outline: none;
+    border-color: green;
 }
 .selected-items {
     font-size: 20px;
@@ -224,36 +276,46 @@
     transform: translateY(2px);
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
-.cancellation-warning {
+.overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.5); /* Semi-transparent background */
+    z-index: 1000;
+  }
+  
+  .cancellation-warning-modal {
     position: fixed;
     top: 50%;
     left: 50%;
     transform: translate(-50%, -50%);
-    background-color: white;
+    background: white;
     padding: 20px;
     border-radius: 8px;
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-    z-index: 1000;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    z-index: 1010; /* Above overlay */
+    text-align: center;
+    max-width: 400px;
+    width: 80%;
   }
   
-.cancellation-warning button {
+  .cancellation-warning-modal h2 {
+    margin-bottom: 20px;
+  }
+  
+  .cancellation-warning-modal button {
     margin: 0 10px;
-    margin-top: 10px;
-    border-radius: 50px;
-    background-color: #4CAF50;
-    color: white;
-    padding: 10px 20px;
-    font-size: 16px;
-    font-weight: bold;
-    text-transform: uppercase;
-    border: none;
+    padding: 8px 16px;
     cursor: pointer;
-    transition: background-color 0.3s ease;
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-}
+    border-radius: 50px;
+    color: #ffffff;
+    background-color: #45a049;
+    border: none;
+    font-weight: 500;
+    width: 150px;
+  }
   
 .cancellation-warning button:hover {
     background-color: #45a049;
@@ -273,7 +335,7 @@
     background-color: rgba(0, 0, 0, 0.5);
     z-index: 999;
 }
-/*styles for adding new items */
+
 .food-menu-modal {
     position: fixed;
     top: 0;
@@ -330,7 +392,8 @@
   }
   
   .close-menu-btn {
-    color: red;
+    color: #ffffff;
+    background-color: red;
     border: none;
     padding: 0.5rem 1rem;
     border-radius: 4px;
@@ -338,6 +401,11 @@
     margin-top: 1rem;
   }
   
+  .close-menu-btn:hover {
+    background-color: #e30f0f;
+    color: #ffffff;
+  }
+
   .selected-items-header {
     display: flex;
     justify-content: space-between;

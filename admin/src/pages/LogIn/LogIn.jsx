@@ -24,8 +24,6 @@ const LogIn = ({ onLogin }) => {
 
   return (
     <div className="login-container">
-      {" "}
-      {/* Specific class for login container */}
       {error && <Alert variant="destructive">{error}</Alert>}
       <form onSubmit={handleSubmit}>
         <h2 className="login-title">Login</h2>

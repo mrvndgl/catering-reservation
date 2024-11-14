@@ -23,7 +23,7 @@ const Sidebar = () => {
           <img src={assets.list_icon} alt="" />
           <p>List Items</p>
         </NavLink>
-        <NavLink to="/view-feedbacks" className="sidebar-option">
+        <NavLink to="/feedbacks" className="sidebar-option">
           <img src={assets.feedback_icon} alt="" />
           <p>View Feedbacks</p>
         </NavLink>

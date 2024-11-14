@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
+import { toast } from "react-toastify";
 import "./PlaceOrder.css";
 import { useLocation, useNavigate } from "react-router-dom";
 import { assets, food_list } from "../../assets/assets";
@@ -18,6 +19,11 @@ const PlaceOrder = () => {
   const [formErrors, setFormErrors] = useState({});
   const [showCancellationWarning, setShowCancellationWarning] = useState(false);
   const [showFoodMenu, setShowFoodMenu] = useState(false);
+  const [address, setAddress] = useState({
+    street: "",
+    city: "",
+    province: "Bohol",
+  });
   const [availableFoodItems, setAvailableFoodItems] = useState(
     food_list.filter((item) => !initialSelectedItems.includes(item))
   );
@@ -26,6 +32,20 @@ const PlaceOrder = () => {
     { label: "Lunch (11:00 AM - 12:00 PM)", value: "lunch" },
     { label: "Early Dinner (4:00 PM - 5:00 PM)", value: "early-dinner" },
     { label: "Dinner (5:00 PM - 7:00 PM)", value: "dinner" },
+  ];
+
+  const cities = [
+    "Tagbilaran",
+    "Dauis",
+    "Panglao",
+    "Baclayon",
+    "Albur",
+    "Loay",
+    "Corella",
+    "Cortes",
+    "Balilihan",
+    "Maribojoc",
+    "Loon",
   ];
 
   const paxOptions = Array.from({ length: 101 }, (_, i) => 50 + i + " pax");
@@ -37,13 +57,8 @@ const PlaceOrder = () => {
   const calculateSubtotal = () => {
     const baseAmount = 17500;
     const pax = parseInt(selectedPax.split(" ")[0]) || 50;
-
-    // Calculate base amount based on number of pax
     const paxTotal = baseAmount + (pax - 50) * 350;
-
-    // Calculate additional food items cost (35 pesos per item per person)
     const additionalItemsCost = selectedItems.length * 35 * pax;
-
     const total = paxTotal + additionalItemsCost;
     setSubtotal(total);
   };
@@ -61,20 +76,55 @@ const PlaceOrder = () => {
     setAvailableFoodItems((prev) => [...prev, itemToRemove]);
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
 
     const errors = {};
-
     if (!selectedDate) errors.selectedDate = "Date is required";
     if (!selectedTimeSlot) errors.selectedTimeSlot = "Time slot is required";
     if (!selectedPax) errors.selectedPax = "Number of pax is required";
+    if (!address.street) errors.street = "Street address is required";
+    if (!address.city) errors.city = "City is required";
 
     if (Object.keys(errors).length > 0) {
       setFormErrors(errors);
-    } else {
-      setFormErrors({});
-      console.log("Proceeding to payment");
+      return;
+    }
+
+    try {
+      const reservationData = {
+        firstName: "",
+        lastName: "",
+        phoneNumber: "",
+        numberOfPax: parseInt(selectedPax) || 0,
+        venue: address,
+        date: selectedDate || "",
+        timeSlot: selectedTimeSlot || "",
+        note: "",
+        selectedItems: selectedItems || [],
+        subtotal: subtotal || 0,
+      };
+
+      const response = await fetch(
+        `${import.meta.env.VITE_API_URL}/api/reservations`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(reservationData),
+        }
+      );
+
+      if (!response.ok) {
+        throw new Error("Failed to create reservation");
+      }
+
+      toast.success("Reservation submitted successfully!");
+      navigate("/confirmation", { state: { reservationData } });
+    } catch (error) {
+      console.error("Error creating reservation:", error);
+      toast.error("Failed to submit reservation");
     }
   };
 
@@ -103,7 +153,16 @@ const PlaceOrder = () => {
           <input type="text" placeholder="First Name" required />
           <input type="text" placeholder="Last Name" required />
         </div>
-        <input type="text" placeholder="Phone no." required />
+
+        {/* Phone No. Field */}
+        <input
+          type="text"
+          placeholder="Phone no."
+          required
+          style={{ width: "150px" }}
+        />
+
+        {/* Pax Selection */}
         <select
           value={selectedPax}
           onChange={(e) => setSelectedPax(e.target.value)}
@@ -120,15 +179,33 @@ const PlaceOrder = () => {
         {formErrors.selectedPax && (
           <span style={{ color: "red" }}>{formErrors.selectedPax}</span>
         )}
+
         <div className="select-date">
           <div className="place-order-center">
             <p className="title-venue">Venue</p>
             <div className="multi-fields">
-              <input type="text" placeholder="Street" />
-              <input type="text" placeholder="City" />
-              <input type="text" placeholder="Province" />
+              <input
+                className="street"
+                type="text"
+                placeholder="Street"
+                required
+              />
+
+              {/* City Dropdown */}
+              <select required>
+                <option value="">Select City</option>
+                {cities.map((city) => (
+                  <option key={city} value={city}>
+                    {city}
+                  </option>
+                ))}
+              </select>
+
+              {/* Province Field (Fixed to Bohol) */}
+              <input type="text" value="Bohol" readOnly />
             </div>
           </div>
+
           <p className="title-date">Select Date</p>
           <DatePicker
             selected={selectedDate}
@@ -161,7 +238,7 @@ const PlaceOrder = () => {
           <div className="note-container">
             <textarea
               className="note-input"
-              placeholder="Leave your note here ..."
+              placeholder="Leave your note here..."
             ></textarea>
           </div>
         </div>
@@ -241,53 +318,43 @@ const PlaceOrder = () => {
       </div>
 
       {showFoodMenu && (
-        <div className="food-menu-modal">
-          <div className="food-menu-content">
-            <h3>Add Food Items</h3>
-            <div className="available-items-list">
-              {availableFoodItems.map((item, index) => (
-                <div key={index} className="available-item">
-                  <span>{item.name}</span>
-                  <button
-                    type="button"
-                    onClick={() => handleAddFoodItem(item)}
-                    className="add-item-btn"
-                  >
-                    Add
-                  </button>
-                </div>
-              ))}
+        <div className="modal-overlay" onClick={() => setShowFoodMenu(false)}>
+          <div className="food-menu-modal">
+            <div className="food-menu-content">
+              <h2>Select Additional Food Items</h2>
+              <ul className="available-items-list">
+                {availableFoodItems.map((item, index) => (
+                  <li key={index} className="available-item">
+                    <span>{item.name}</span>
+                    <button
+                      type="button"
+                      className="add-item-btn"
+                      onClick={() => handleAddFoodItem(item)}
+                    >
+                      Add
+                    </button>
+                  </li>
+                ))}
+              </ul>
+              <button
+                className="close-menu-btn"
+                onClick={() => setShowFoodMenu(false)}
+              >
+                Close
+              </button>
             </div>
-            <button
-              type="button"
-              className="close-menu-btn"
-              onClick={() => setShowFoodMenu(false)}
-            >
-              Close
-            </button>
           </div>
-          <div
-            className="modal-overlay"
-            onClick={() => setShowFoodMenu(false)}
-          ></div>
         </div>
       )}
 
       {showCancellationWarning && (
-        <React.Fragment>
-          <div className="cancellation-warning">
-            <p>Are you sure you want to cancel the reservation?</p>
-            <div>
-              <button className="yes-button" onClick={confirmCancelReservation}>
-                Yes, Cancel
-              </button>
-              <button className="no-button" onClick={cancelCancelReservation}>
-                No, Keep Reservation
-              </button>
-            </div>
+        <div className="modal-overlay" onClick={() => setShowFoodMenu(false)}>
+          <div className="cancellation-warning-modal">
+            <h2>Are you sure you want to cancel the reservation?</h2>
+            <button onClick={confirmCancelReservation}>Yes, Cancel</button>
+            <button onClick={cancelCancelReservation}>No, Go Back</button>
           </div>
-          <div className="cancellation-warning-overlay"></div>
-        </React.Fragment>
+        </div>
       )}
     </form>
   );
