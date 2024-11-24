@@ -1,60 +1,141 @@
-const Reservation = "../models/reservationModel.js"; // Assuming you have a Reservation model
+import Reservation from "../models/reservationModel.js";
 
-// Handle new reservation creation
-const createReservation = async (req, res) => {
-  try {
-    // Extract reservation details from request body
-    const {
-      firstName,
-      lastName,
-      phoneNumber,
-      pax,
-      date,
-      timeSlot,
-      address, // Contains street, city, and province
-      note,
-    } = req.body;
+// Utility function to generate unique reference code
+const generateUniqueReferenceCode = async () => {
+  const characters = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
+  let referenceCode;
+  let isUnique = false;
 
-    // Validate reservation details
-    if (
-      !firstName ||
-      !lastName ||
-      !phoneNumber ||
-      !pax ||
-      !date ||
-      !timeSlot ||
-      !address.street ||
-      !address.city ||
-      !address.province
-    ) {
-      return res
-        .status(400)
-        .json({ error: "All reservation details are required" });
+  while (!isUnique) {
+    referenceCode = Array(8)
+      .fill()
+      .map(() =>
+        characters.charAt(Math.floor(Math.random() * characters.length))
+      )
+      .join("");
+
+    // Check if the reference code already exists
+    const existingReservation = await Reservation.findOne({ referenceCode });
+    if (!existingReservation) {
+      isUnique = true;
     }
+  }
 
-    // Create a new reservation in the database
-    const newReservation = await Reservation.create({
-      firstName,
-      lastName,
-      phoneNumber,
-      numberOfPax: pax,
-      date,
-      timeSlot,
-      venue: address, // Assumes address contains street, city, and province
-      note,
+  return referenceCode;
+};
+
+// Create new reservation
+export const createReservation = async (req, res) => {
+  try {
+    // Generate unique reference code if not provided
+    const referenceCode =
+      req.body.referenceCode || (await generateUniqueReferenceCode());
+
+    // Create reservation with reference code
+    const reservation = new Reservation({
+      ...req.body,
+      referenceCode,
     });
 
-    // Send a success response with a message
-    res.status(201).json({
-      message: "Reservation created successfully",
-      reservation: newReservation,
-    });
+    const savedReservation = await reservation.save();
+    res.status(201).json(savedReservation);
   } catch (error) {
-    console.error("Error creating reservation:", error);
-    res.status(500).json({ error: "Failed to create reservation" });
+    res.status(400).json({ message: error.message });
   }
 };
 
-module.exports = {
-  createReservation,
+// Get all reservations
+export const getReservations = async (req, res) => {
+  try {
+    const { status, date, timeSlot } = req.query;
+    let query = {};
+
+    if (status) query.status = status;
+    if (date) query.date = new Date(date);
+    if (timeSlot) query.timeSlot = timeSlot;
+
+    const reservations = await Reservation.find(query).sort({ date: -1 });
+    res.json(reservations);
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};
+
+// Get single reservation
+export const getReservation = async (req, res) => {
+  try {
+    const reservation = await Reservation.findById(req.params.id);
+    if (!reservation) {
+      return res.status(404).json({ message: "Reservation not found" });
+    }
+    res.json(reservation);
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};
+
+// Get reservation by reference code
+export const getReservationByReferenceCode = async (req, res) => {
+  try {
+    const { referenceCode } = req.params;
+    const reservation = await Reservation.findOne({
+      referenceCode: referenceCode.toUpperCase(),
+    });
+
+    if (!reservation) {
+      return res.status(404).json({ message: "Reservation not found" });
+    }
+    res.json(reservation);
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};
+
+// Update reservation status
+export const updateReservationStatus = async (req, res) => {
+  try {
+    const { status } = req.body;
+    const reservation = await Reservation.findByIdAndUpdate(
+      req.params.id,
+      { status },
+      { new: true }
+    );
+    if (!reservation) {
+      return res.status(404).json({ message: "Reservation not found" });
+    }
+    res.json(reservation);
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};
+
+// Delete reservation
+export const deleteReservation = async (req, res) => {
+  try {
+    const reservation = await Reservation.findByIdAndDelete(req.params.id);
+    if (!reservation) {
+      return res.status(404).json({ message: "Reservation not found" });
+    }
+    res.json({ message: "Reservation deleted successfully" });
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};
+
+// Get reservations statistics
+export const getReservationStats = async (req, res) => {
+  try {
+    const stats = await Reservation.aggregate([
+      {
+        $group: {
+          _id: "$status",
+          count: { $sum: 1 },
+          totalRevenue: { $sum: "$subtotal" },
+        },
+      },
+    ]);
+    res.json(stats);
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
 };

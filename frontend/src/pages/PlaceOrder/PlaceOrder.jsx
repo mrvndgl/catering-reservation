@@ -6,11 +6,63 @@ import "./PlaceOrder.css";
 import { useLocation, useNavigate } from "react-router-dom";
 import { assets, food_list } from "../../assets/assets";
 
+const API_BASE_URL = import.meta.env.VITE_API_URL || "http://localhost:4000";
+
+// Utility function to validate phone number
+const isValidPhoneNumber = (phone) => {
+  const phoneRegex = /^(09|\+639)\d{9}$/;
+  return phoneRegex.test(phone);
+};
+
+// Utility function to validate date
+const isValidDate = (date) => {
+  const today = new Date();
+  today.setHours(0, 0, 0, 0);
+  return date >= today;
+};
+
+const generateReferenceCode = () => {
+  const characters = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
+  let result = "";
+  for (let i = 0; i < 8; i++) {
+    result += characters.charAt(Math.floor(Math.random() * characters.length));
+  }
+  return result;
+};
+
+const ReferenceCodeModal = ({ show, referenceCode, onClose }) => {
+  if (!show) return null;
+
+  return (
+    <div className="modal-overlay">
+      <div className="reference-modal">
+        <h2>Reservation Submitted Successfully!</h2>
+        <p>Your reference code is: {referenceCode}</p>
+        <p>Please save this code for future reference.</p>
+        <button onClick={onClose}>Close</button>
+      </div>
+    </div>
+  );
+};
+
 const PlaceOrder = () => {
   const navigate = useNavigate();
   const location = useLocation();
   const { selectedItems: initialSelectedItems = [] } = location.state || {};
 
+  // Form Data State
+  const [formData, setFormData] = useState({
+    firstName: "",
+    lastName: "",
+    phoneNumber: "",
+    paxOptions: "",
+    note: "",
+    address: "",
+    date: "",
+    timeSlots: "",
+  });
+
+  // Other States
   const [selectedItems, setSelectedItems] = useState(initialSelectedItems);
   const [selectedDate, setSelectedDate] = useState(null);
   const [selectedTimeSlot, setSelectedTimeSlot] = useState("");
@@ -19,6 +71,8 @@ const PlaceOrder = () => {
   const [formErrors, setFormErrors] = useState({});
   const [showCancellationWarning, setShowCancellationWarning] = useState(false);
   const [showFoodMenu, setShowFoodMenu] = useState(false);
+  const [showReferenceModal, setShowReferenceModal] = useState(false);
+  const [referenceCode, setReferenceCode] = useState("");
   const [address, setAddress] = useState({
     street: "",
     city: "",
@@ -28,6 +82,7 @@ const PlaceOrder = () => {
     food_list.filter((item) => !initialSelectedItems.includes(item))
   );
 
+  // Constants
   const timeSlots = [
     { label: "Lunch (11:00 AM - 12:00 PM)", value: "lunch" },
     { label: "Early Dinner (4:00 PM - 5:00 PM)", value: "early-dinner" },
@@ -35,20 +90,37 @@ const PlaceOrder = () => {
   ];
 
   const cities = [
-    "Tagbilaran",
-    "Dauis",
-    "Panglao",
-    "Baclayon",
     "Albur",
-    "Loay",
+    "Baclayon",
+    "Balilihan",
     "Corella",
     "Cortes",
-    "Balilihan",
-    "Maribojoc",
+    "Dauis",
+    "Loay",
     "Loon",
+    "Maribojoc",
+    "Panglao",
+    "Tagbilaran",
   ];
 
   const paxOptions = Array.from({ length: 101 }, (_, i) => 50 + i + " pax");
+
+  // Handlers
+  const handleInputChange = (e) => {
+    const { name, value } = e.target;
+    setFormData((prev) => ({
+      ...prev,
+      [name]: value,
+    }));
+  };
+
+  const handleAddressChange = (e) => {
+    const { name, value } = e.target;
+    setAddress((prev) => ({
+      ...prev,
+      [name]: value,
+    }));
+  };
 
   useEffect(() => {
     calculateSubtotal();
@@ -76,8 +148,12 @@ const PlaceOrder = () => {
     setAvailableFoodItems((prev) => [...prev, itemToRemove]);
   };
 
+  // Replace only the handleSubmit function in your code with this version:
   const handleSubmit = async (e) => {
     e.preventDefault();
+
+    const newReferenceCode = generateReferenceCode();
+    setReferenceCode(newReferenceCode);
 
     const errors = {};
     if (!selectedDate) errors.selectedDate = "Date is required";
@@ -85,51 +161,87 @@ const PlaceOrder = () => {
     if (!selectedPax) errors.selectedPax = "Number of pax is required";
     if (!address.street) errors.street = "Street address is required";
     if (!address.city) errors.city = "City is required";
+    if (!formData.firstName.trim()) errors.firstName = "First name is required";
+    if (!formData.lastName.trim()) errors.lastName = "Last name is required";
+    if (!formData.phoneNumber) errors.phoneNumber = "Phone number is required";
 
     if (Object.keys(errors).length > 0) {
       setFormErrors(errors);
+      toast.error("Please fill in all required fields", {
+        position: "top-center",
+        autoClose: 3000,
+      });
       return;
     }
 
     try {
       const reservationData = {
-        firstName: "",
-        lastName: "",
-        phoneNumber: "",
-        numberOfPax: parseInt(selectedPax) || 0,
-        venue: address,
-        date: selectedDate || "",
-        timeSlot: selectedTimeSlot || "",
-        note: "",
-        selectedItems: selectedItems || [],
-        subtotal: subtotal || 0,
+        customerName: `${formData.firstName} ${formData.lastName}`.trim(),
+        customerPhone: formData.phoneNumber,
+        pax: parseInt(selectedPax),
+        address: {
+          street: address.street,
+          city: address.city,
+          province: address.province,
+        },
+        date: selectedDate.toISOString(),
+        timeSlot: selectedTimeSlot,
+        note: formData.note,
+        selectedItems: selectedItems.map((item) => ({
+          id: item.id || item._id,
+          name: item.name,
+        })),
+        subtotal: subtotal,
+        status: "pending",
+        referenceCode: newReferenceCode,
       };
 
-      const response = await fetch(
-        `${import.meta.env.VITE_API_URL}/api/reservations`,
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify(reservationData),
-        }
-      );
+      const response = await fetch(`${API_BASE_URL}/api/reservations`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${localStorage.getItem("token")}`,
+        },
+        body: JSON.stringify(reservationData),
+      });
 
       if (!response.ok) {
         throw new Error("Failed to create reservation");
       }
 
-      toast.success("Reservation submitted successfully!");
-      navigate("/confirmation", { state: { reservationData } });
+      const data = await response.json();
+
+      await fetch(`${API_BASE_URL}/api/notifications`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${localStorage.getItem("token")}`,
+        },
+        body: JSON.stringify({
+          userId: localStorage.getItem("userId"),
+          reservationId: data._id,
+          referenceCode: newReferenceCode,
+          type: "reservation_created",
+          message: `Your reservation has been submitted and is pending approval. Reference Code: ${newReferenceCode}`,
+          status: "unread",
+        }),
+      });
+
+      localStorage.setItem("lastReferenceCode", newReferenceCode);
+      setShowReferenceModal(true);
     } catch (error) {
-      console.error("Error creating reservation:", error);
-      toast.error("Failed to submit reservation");
+      console.error("Error:", error);
+      toast.error("Failed to create reservation. Please try again.", {
+        position: "top-center",
+        autoClose: 5000,
+      });
     }
   };
 
-  const handleReturn = () => {
-    navigate("/");
+  // Navigate after showing the toast
+  const handleCloseReferenceModal = () => {
+    setShowReferenceModal(false);
+    navigate("/", { replace: true });
   };
 
   const handleCancelReservation = () => {
@@ -137,32 +249,52 @@ const PlaceOrder = () => {
   };
 
   const confirmCancelReservation = () => {
-    navigate("/", { replace: true });
+    setShowCancellationWarning(false);
+    navigate("/");
   };
 
   const cancelCancelReservation = () => {
     setShowCancellationWarning(false);
   };
 
+  const handleReturn = () => {
+    navigate(-1);
+  };
+
   return (
     <form className="place-order" onSubmit={handleSubmit}>
       <div className="place-order-left">
         <img onClick={handleReturn} src={assets.back_icon} alt="Back" />
-        <p className="title">Reservation Information</p>
+        <p className="title">Reservation Informations</p>
         <div className="multi-fields">
-          <input type="text" placeholder="First Name" required />
-          <input type="text" placeholder="Last Name" required />
+          <input
+            type="text"
+            name="firstName"
+            value={formData.firstName}
+            onChange={handleInputChange}
+            placeholder="First Name"
+            required
+          />
+          <input
+            type="text"
+            name="lastName"
+            value={formData.lastName}
+            onChange={handleInputChange}
+            placeholder="Last Name"
+            required
+          />
         </div>
 
-        {/* Phone No. Field */}
         <input
           type="text"
+          name="phoneNumber"
+          value={formData.phoneNumber}
+          onChange={handleInputChange}
           placeholder="Phone no."
           required
           style={{ width: "150px" }}
         />
 
-        {/* Pax Selection */}
         <select
           value={selectedPax}
           onChange={(e) => setSelectedPax(e.target.value)}
@@ -187,12 +319,19 @@ const PlaceOrder = () => {
               <input
                 className="street"
                 type="text"
+                name="street"
+                value={address.street}
+                onChange={handleAddressChange}
                 placeholder="Street"
                 required
               />
 
-              {/* City Dropdown */}
-              <select required>
+              <select
+                name="city"
+                value={address.city}
+                onChange={handleAddressChange}
+                required
+              >
                 <option value="">Select City</option>
                 {cities.map((city) => (
                   <option key={city} value={city}>
@@ -201,8 +340,13 @@ const PlaceOrder = () => {
                 ))}
               </select>
 
-              {/* Province Field (Fixed to Bohol) */}
-              <input type="text" value="Bohol" readOnly />
+              <input
+                type="text"
+                name="province"
+                value={address.province}
+                onChange={handleAddressChange}
+                readOnly
+              />
             </div>
           </div>
 
@@ -218,6 +362,7 @@ const PlaceOrder = () => {
           {formErrors.selectedDate && (
             <span style={{ color: "red" }}>{formErrors.selectedDate}</span>
           )}
+
           <p className="title-time">Select Time Slot</p>
           <select
             value={selectedTimeSlot}
@@ -235,14 +380,19 @@ const PlaceOrder = () => {
           {formErrors.selectedTimeSlot && (
             <span style={{ color: "red" }}>{formErrors.selectedTimeSlot}</span>
           )}
+
           <div className="note-container">
             <textarea
               className="note-input"
+              name="note"
+              value={formData.note}
+              onChange={handleInputChange}
               placeholder="Leave your note here..."
             ></textarea>
           </div>
         </div>
       </div>
+
       <div className="place-order-right">
         <div className="order-total">
           <p className="title">Order Summary</p>
@@ -319,7 +469,7 @@ const PlaceOrder = () => {
 
       {showFoodMenu && (
         <div className="modal-overlay" onClick={() => setShowFoodMenu(false)}>
-          <div className="food-menu-modal">
+          <div className="food-menu-modal" onClick={(e) => e.stopPropagation()}>
             <div className="food-menu-content">
               <h2>Select Additional Food Items</h2>
               <ul className="available-items-list">
@@ -347,12 +497,37 @@ const PlaceOrder = () => {
         </div>
       )}
 
+      <ReferenceCodeModal
+        show={showReferenceModal}
+        referenceCode={referenceCode}
+        onClose={handleCloseReferenceModal}
+      />
+
       {showCancellationWarning && (
-        <div className="modal-overlay" onClick={() => setShowFoodMenu(false)}>
-          <div className="cancellation-warning-modal">
-            <h2>Are you sure you want to cancel the reservation?</h2>
-            <button onClick={confirmCancelReservation}>Yes, Cancel</button>
-            <button onClick={cancelCancelReservation}>No, Go Back</button>
+        <div className="modal-overlay" onClick={cancelCancelReservation}>
+          <div
+            className="cancellation-warning-modal"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <div className="modal-content">
+              <h2>Are you sure you want to cancel the reservation?</h2>
+              <div className="modal-buttons">
+                <button
+                  type="button"
+                  className="confirm-cancel-btn"
+                  onClick={confirmCancelReservation}
+                >
+                  Yes, Cancel
+                </button>
+                <button
+                  type="button"
+                  className="go-back-btn"
+                  onClick={cancelCancelReservation}
+                >
+                  No, Go Back
+                </button>
+              </div>
+            </div>
           </div>
         </div>
       )}

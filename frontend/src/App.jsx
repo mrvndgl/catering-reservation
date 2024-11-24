@@ -1,13 +1,13 @@
 import React from "react";
 import { Routes, Route, useLocation } from "react-router-dom";
-import { ToastContainer } from "react-toastify"; // Import ToastContainer
-import "react-toastify/dist/ReactToastify.css"; // Import toastify CSS
+import { ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 import Home from "./pages/Home/Home";
 import Navbar from "./components/Navbar/Navbar";
 import Reservation from "./components/Reservation/Reservation";
 import PlaceOrder from "./pages/PlaceOrder/PlaceOrder";
 import Footer from "./components/Footer/Footer";
-import Notifications from "./pages/Notifications/Notifications";
+import ViewNotifications from "./pages/ViewNotifications/ViewNotifications";
 
 const App = () => {
   const location = useLocation();
@@ -20,7 +20,7 @@ const App = () => {
         <Route path="/" element={<Home />} />
         <Route path="/reservation" element={<Reservation />} />
         <Route path="/order" element={<PlaceOrder />} />
-        <Route path="/notifications" element={<Notifications />} />
+        <Route path="/view-notifications" element={<ViewNotifications />} />
       </Routes>
       <Footer />
       <ToastContainer />

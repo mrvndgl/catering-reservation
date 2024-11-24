@@ -79,19 +79,28 @@ const Reservation = ({ setShowReservation }) => {
 
   const createReservation = async (reservationData) => {
     const apiUrl = import.meta.env.VITE_API_URL || "http://localhost:4000";
-    const response = await fetch(`${apiUrl}/api/reservations`, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify(reservationData),
-    });
+    try {
+      const response = await fetch(
+        `${import.meta.env.VITE_API_URL}/api/reservations`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(reservationData),
+        }
+      );
 
-    if (!response.ok) {
-      throw new Error("Failed to create reservation");
+      if (!response.ok) {
+        throw new Error("Failed to create reservation");
+      }
+
+      navigate("/", { state: { reservationData } });
+      toast.success("Reservation submitted successfully!");
+    } catch (error) {
+      console.error("Error creating reservation:", error);
+      toast.error("Failed to submit reservation");
     }
-
-    return response.json();
   };
 
   const handleContinue = async () => {

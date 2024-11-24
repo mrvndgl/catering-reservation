@@ -1,17 +1,46 @@
 import React, { useState } from "react";
-import Alert from "../../components/Alert/Alert"; // Update the path as necessary
-import "./LogIn.css"; // Import the CSS file
+import { toast } from "react-toastify";
+import "./LogIn.css";
 
 const LogIn = ({ onLogin }) => {
-  const [username, setUsername] = useState(""); // Changed from email to username
+  const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState("");
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    setError(""); // Clear previous errors
+
+    if (!username.trim() || !password.trim()) {
+      setError("Please enter both username and password");
+      return;
+    }
+
     try {
-      await onLogin(username, password); // Use username for login
+      // Use toast.promise to handle the async login operation
+      await toast.promise(onLogin(username, password), {
+        pending: {
+          render() {
+            return "Logging in...";
+          },
+          icon: "🔄",
+        },
+        success: {
+          render() {
+            return "Login successful!";
+          },
+          icon: "✅",
+        },
+        error: {
+          render({ data }) {
+            // Set the error message for the Alert component
+            setError(data?.message || "Login failed");
+            return data?.message || "Login failed";
+          },
+          icon: "❌",
+        },
+      });
     } catch (error) {
       console.error("Login error:", error);
       setError(error.message || "Login failed");
@@ -24,7 +53,13 @@ const LogIn = ({ onLogin }) => {
 
   return (
     <div className="login-container">
-      {error && <Alert variant="destructive">{error}</Alert>}
+      {error && (
+        <div className="error-container">
+          <Alert variant="destructive">
+            <span>{error}</span>
+          </Alert>
+        </div>
+      )}
       <form onSubmit={handleSubmit}>
         <h2 className="login-title">Login</h2>
         <div className="input-field">
@@ -32,7 +67,7 @@ const LogIn = ({ onLogin }) => {
             type="text"
             value={username}
             onChange={(e) => setUsername(e.target.value)}
-            placeholder="Username" // Change to username
+            placeholder="Username"
             required
             className="login-input"
           />

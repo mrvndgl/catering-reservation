@@ -1,180 +1,147 @@
-import React, { useState, useEffect } from "react";
-import { Routes, Route, Navigate, useNavigate } from "react-router-dom";
+import React from "react";
+import { Routes, Route, Navigate } from "react-router-dom";
+import { ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 import Navbar from "./components/Navbar/Navbar";
 import Sidebar from "./components/Sidebar/Sidebar";
-import Accounts from "./pages/Accounts/Accounts";
-import Add from "./pages/Add/Add";
-import ListItems from "./pages/ListItems/ListItems";
-import Login from "./pages/LogIn/LogIn";
-import Alert from "./components/Alert/Alert";
 import ViewReservations from "./pages/ViewReservations/ViewReservations";
 import Transactions from "./pages/Transactions/Transactions";
 import Feedbacks from "./pages/Feedbacks/Feedbacks";
+import Accounts from "./pages/Accounts/Accounts";
+import Add from "./pages/Add/Add";
+import ListItems from "./pages/ListItems/ListItems";
+import Login from "./pages/Login/LogIn";
 
 const App = () => {
-  const [isAuthenticated, setIsAuthenticated] = useState(false);
-  const [isLoading, setIsLoading] = useState(true);
-  const [error, setError] = useState("");
-  const [profilePhoto, setProfilePhoto] = useState(null);
-  const navigate = useNavigate();
+  const [isAuthenticated, setIsAuthenticated] = React.useState(true);
+  const [profilePhoto, setProfilePhoto] = React.useState(null);
 
-  // Check authentication status on mount
-  useEffect(() => {
-    const token = localStorage.getItem("token");
-    if (token) {
-      setIsAuthenticated(true);
-      navigate("/reservations");
-    }
-    setIsLoading(false);
-  }, [navigate]);
-
-  const handleLogin = async (username, password) => {
-    try {
-      const response = await fetch("http://localhost:4000/api/users/login", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ username, password }),
-      });
-
-      const data = await response.json();
-
-      if (response.ok) {
-        localStorage.setItem("token", data.token);
-        setIsAuthenticated(true);
-        setError("");
-        navigate("/reservations");
-      } else {
-        throw new Error(data.message || "Login failed");
-      }
-    } catch (error) {
-      setError(error.message);
-    }
+  const handleLogin = () => {
+    setIsAuthenticated(true);
+    toast.success("Login successful!");
   };
 
   const handleLogout = () => {
-    localStorage.removeItem("token");
     setIsAuthenticated(false);
-    setError("");
-    setProfilePhoto(null);
-    navigate("/login");
+    toast.info("Logged out successfully!");
   };
 
   const handleEditProfile = () => {
-    const fileInput = document.createElement("input");
-    fileInput.type = "file";
-    fileInput.accept = "image/*";
-    fileInput.onchange = (e) => {
-      const file = e.target.files[0];
-      if (file) {
-        const reader = new FileReader();
-        reader.onload = (e) => {
-          setProfilePhoto(e.target.result);
-        };
-        reader.readAsDataURL(file);
-      }
-    };
-    fileInput.click();
+    // Handle edit profile logic
+    toast.info("Editing profile...");
   };
-
-  if (isLoading) {
-    return <div>Loading...</div>;
-  }
 
   return (
     <div>
-      {error && <Alert variant="destructive">{error}</Alert>}
-      {isAuthenticated && (
-        <Navbar
-          onLogout={handleLogout}
-          onEditProfile={handleEditProfile}
-          profilePhoto={profilePhoto}
-        />
-      )}
-      <hr />
-      <div className="app-content">
-        {isAuthenticated && <Sidebar />}
+      <ToastContainer
+        position="top-right"
+        autoClose={5000}
+        hideProgressBar={false}
+        newestOnTop={false}
+        closeOnClick
+        rtl={false}
+        pauseOnFocusLoss
+        draggable
+        pauseOnHover
+        theme="colored"
+        containerId="main-toast-container"
+      />
 
-        <Routes>
-          <Route
-            path="/"
-            element={
-              isAuthenticated ? (
-                <Navigate to="/reservations" replace />
-              ) : (
-                <Navigate to="/login" replace />
-              )
-            }
+      <div>
+        {isAuthenticated && (
+          <Navbar
+            onLogout={handleLogout}
+            onEditProfile={handleEditProfile}
+            profilePhoto={profilePhoto}
           />
+        )}
+        <hr />
+        <div className="app-content">
+          {isAuthenticated && <Sidebar />}
+          <div className="main-content">
+            <Routes>
+              <Route
+                path="/"
+                element={
+                  isAuthenticated ? (
+                    <Navigate to="/reservations" />
+                  ) : (
+                    <Navigate to="/login" />
+                  )
+                }
+              />
 
-          <Route
-            path="/login"
-            element={
-              isAuthenticated ? (
-                <Navigate to="/" replace />
-              ) : (
-                <Login onLogin={handleLogin} />
-              )
-            }
-          />
+              <Route
+                path="/login"
+                element={
+                  isAuthenticated ? (
+                    <Navigate to="/reservations" />
+                  ) : (
+                    <Login onLogin={handleLogin} />
+                  )
+                }
+              />
 
-          <Route
-            path="/reservations"
-            element={
-              isAuthenticated ? (
-                <ViewReservations />
-              ) : (
-                <Navigate to="/reservations" replace />
-              )
-            }
-          />
+              {/* Protected Routes */}
+              <Route
+                path="/reservations"
+                element={
+                  isAuthenticated ? (
+                    <ViewReservations />
+                  ) : (
+                    <Navigate to="/login" />
+                  )
+                }
+              />
 
-          <Route
-            path="/transactions"
-            element={
-              isAuthenticated ? (
-                <Transactions />
-              ) : (
-                <Navigate to="/transactions" replace />
-              )
-            }
-          />
+              <Route
+                path="/transactions"
+                element={
+                  isAuthenticated ? <Transactions /> : <Navigate to="/login" />
+                }
+              />
 
-          <Route
-            path="/feedbacks"
-            element={
-              isAuthenticated ? (
-                <Feedbacks />
-              ) : (
-                <Navigate to="/feedbacks" replace />
-              )
-            }
-          />
+              <Route
+                path="/feedbacks"
+                element={
+                  isAuthenticated ? <Feedbacks /> : <Navigate to="/login" />
+                }
+              />
 
-          <Route
-            path="/accounts"
-            element={
-              isAuthenticated ? (
-                <Accounts />
-              ) : (
-                <Navigate to="/accounts" replace />
-              )
-            }
-          />
+              <Route
+                path="/accounts"
+                element={
+                  isAuthenticated ? <Accounts /> : <Navigate to="/login" />
+                }
+              />
 
-          <Route
-            path="/add"
-            element={isAuthenticated ? <Add /> : <Navigate to="/add" replace />}
-          />
+              <Route
+                path="/add"
+                element={isAuthenticated ? <Add /> : <Navigate to="/login" />}
+              />
 
-          <Route
-            path="/list-items"
-            element={
-              isAuthenticated ? <ListItems /> : <Navigate to="/login" replace />
-            }
-          />
-        </Routes>
+              <Route
+                path="/list-items"
+                element={
+                  isAuthenticated ? <ListItems /> : <Navigate to="/login" />
+                }
+              />
+
+              {/* Catch all route - redirect to reservations if authenticated, login if not */}
+              <Route
+                path="*"
+                element={
+                  isAuthenticated ? (
+                    <Navigate to="/reservations" />
+                  ) : (
+                    <Navigate to="/login" />
+                  )
+                }
+              />
+            </Routes>
+            <ToastContainer />
+          </div>
+        </div>
       </div>
     </div>
   );

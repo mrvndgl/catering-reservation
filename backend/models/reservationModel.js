@@ -1,27 +1,80 @@
 import mongoose from "mongoose";
 
 const reservationSchema = new mongoose.Schema({
-  customerName: { type: String, required: true },
-  customerEmail: { type: String, required: true },
-  customerPhone: { type: String, required: true },
-  date: { type: Date, required: true },
-  timeSlot: { type: String, required: true },
-  pax: { type: Number, required: true },
-  selectedItems: [{ type: String }],
-  subtotal: { type: Number, required: true },
+  customerName: {
+    type: String,
+    required: true,
+    trim: true,
+  },
+  customerPhone: {
+    type: String,
+    required: true,
+    trim: true,
+  },
+  pax: {
+    type: Number,
+    required: true,
+    min: 50,
+  },
   address: {
-    street: { type: String, required: true },
-    city: { type: String, required: true },
-    province: { type: String, required: true },
+    street: {
+      type: String,
+      required: true,
+      trim: true,
+    },
+    city: {
+      type: String,
+      required: true,
+      trim: true,
+    },
+    province: {
+      type: String,
+      required: true,
+      default: "Bohol",
+    },
+  },
+  date: {
+    type: Date,
+    required: true,
+  },
+  timeSlot: {
+    type: String,
+    required: true,
+    enum: ["lunch", "early-dinner", "dinner"],
+  },
+  note: {
+    type: String,
+    trim: true,
+  },
+  selectedItems: [
+    {
+      name: {
+        type: String,
+        required: true,
+      },
+    },
+  ],
+  subtotal: {
+    type: Number,
+    required: true,
   },
   status: {
     type: String,
-    enum: ["pending", "accepted", "rejected", "completed"],
+    enum: ["pending", "confirmed", "cancelled", "completed"],
     default: "pending",
   },
-  createdAt: { type: Date, default: Date.now },
+  referenceCode: {
+    type: String,
+    required: true,
+    unique: true,
+    uppercase: true,
+    minlength: 8,
+    maxlength: 8,
+  },
+  createdAt: {
+    type: Date,
+    default: Date.now,
+  },
 });
 
-const Reservation = mongoose.model("Reservation", reservationSchema);
-
-export default Reservation;
+export default mongoose.model("Reservation", reservationSchema);

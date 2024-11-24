@@ -1,27 +1,25 @@
 import React, { useState, useEffect } from "react";
-import { toast, ToastContainer } from "react-toastify";
-import "react-toastify/dist/ReactToastify.css";
+import { toast } from "react-toastify";
 import "./ViewReservations.css";
-import { useNavigate } from "react-router-dom";
 
 const ViewReservations = () => {
   const [reservations, setReservations] = useState([]);
+  const [filteredReservations, setFilteredReservations] = useState([]);
   const [loading, setLoading] = useState(true);
-  const navigate = useNavigate();
+  const [notifications, setNotifications] = useState([]);
+  const [filters, setFilters] = useState({
+    status: "",
+    startDate: "",
+    endDate: "",
+    timeSlot: "",
+  });
 
-  useEffect(() => {
-    const token = localStorage.getItem("token");
-    if (!token) {
-      navigate("/login");
-      return;
-    }
-    fetchReservations();
-  }, [navigate]);
-
+  // Fetch reservations
   const fetchReservations = async () => {
     try {
       const token = localStorage.getItem("token");
       const response = await fetch("http://localhost:4000/api/reservations", {
+        method: "GET",
         headers: {
           Authorization: `Bearer ${token}`,
           "Content-Type": "application/json",
@@ -29,32 +27,32 @@ const ViewReservations = () => {
       });
 
       if (!response.ok) {
-        if (response.status === 401) {
-          // Token is invalid or expired
-          localStorage.removeItem("token");
-          navigate("/login");
-          return;
-        }
-        throw new Error("Network response was not ok");
+        throw new Error("Failed to fetch reservations");
       }
 
       const data = await response.json();
       setReservations(data);
+      setFilteredReservations(data);
+      setLoading(false);
     } catch (error) {
-      console.error("Error fetching reservations:", error);
-      toast.error("Failed to load reservations.");
-    } finally {
+      toast.error(error.message);
       setLoading(false);
     }
   };
 
-  const handleAcceptReservation = async (reservationId) => {
+  const fetchNotifications = async () => {
     try {
       const token = localStorage.getItem("token");
+      const userId = localStorage.getItem("userId");
+
+      if (!token || !userId) {
+        throw new Error("No authentication token or user ID");
+      }
+
       const response = await fetch(
-        `http://localhost:4000/api/reservations/${reservationId}/accept`,
+        `http://localhost:4000/api/notifications/${userId}`,
         {
-          method: "PUT",
+          method: "GET",
           headers: {
             Authorization: `Bearer ${token}`,
             "Content-Type": "application/json",
@@ -63,97 +61,222 @@ const ViewReservations = () => {
       );
 
       if (!response.ok) {
-        if (response.status === 401) {
-          localStorage.removeItem("token");
-          navigate("/login");
-          return;
-        }
-        throw new Error("Failed to accept reservation.");
+        throw new Error("Failed to fetch notifications");
       }
 
-      toast.success("Reservation accepted and notification sent.");
-      fetchReservations();
+      const data = await response.json();
+      setNotifications(data);
     } catch (error) {
-      console.error("Error accepting reservation:", error);
-      toast.error("Failed to accept reservation.");
+      console.error("Error fetching notifications:", error);
+      toast.error("Could not load notifications");
     }
   };
 
-  const formatAddress = (address) => {
-    if (!address) return "Address not available";
-    const parts = [address.street, address.city, address.province].filter(
-      Boolean
-    );
-    return parts.length > 0 ? parts.join(", ") : "Address not available";
+  // Update reservation status
+  const updateReservationStatus = async (id, newStatus) => {
+    try {
+      const token = localStorage.getItem("token");
+      const response = await fetch(
+        `http://localhost:4000/api/reservations/${id}`,
+        {
+          method: "PUT",
+          headers: {
+            Authorization: `Bearer ${token}`,
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ status: newStatus }),
+        }
+      );
+
+      if (!response.ok) {
+        throw new Error("Failed to update reservation status");
+      }
+
+      toast.success(`Reservation status updated to ${newStatus}`);
+      fetchReservations();
+    } catch (error) {
+      toast.error(error.message);
+    }
   };
 
-  if (loading) {
-    return <div>Loading...</div>;
-  }
+  // Apply filters
+  const applyFilters = () => {
+    let filtered = reservations;
+
+    if (filters.status) {
+      filtered = filtered.filter((res) => res.status === filters.status);
+    }
+
+    if (filters.startDate) {
+      filtered = filtered.filter(
+        (res) => new Date(res.date) >= new Date(filters.startDate)
+      );
+    }
+
+    if (filters.endDate) {
+      filtered = filtered.filter(
+        (res) => new Date(res.date) <= new Date(filters.endDate)
+      );
+    }
+
+    if (filters.timeSlot) {
+      filtered = filtered.filter((res) => res.timeSlot === filters.timeSlot);
+    }
+
+    setFilteredReservations(filtered);
+  };
+
+  useEffect(() => {
+    fetchReservations();
+    fetchNotifications();
+  }, []);
+
+  useEffect(() => {
+    applyFilters();
+  }, [filters, reservations]);
+
+  const handleFilterChange = (e) => {
+    const { name, value } = e.target;
+    setFilters((prev) => ({
+      ...prev,
+      [name]: value,
+    }));
+  };
+
+  const renderReservationDetails = (reservation) => {
+    return (
+      <div className="reservation-details">
+        <p>
+          <strong>Reference Code:</strong> {reservation.referenceCode}
+        </p>
+        <p>
+          <strong>Name:</strong> {reservation.customerName}
+        </p>
+        <p>
+          <strong>Phone:</strong> {reservation.customerPhone}
+        </p>
+        <p>
+          <strong>Date:</strong>{" "}
+          {new Date(reservation.date).toLocaleDateString()}
+        </p>
+        <p>
+          <strong>Time Slot:</strong> {reservation.timeSlot}
+        </p>
+        <p>
+          <strong>Pax:</strong> {reservation.pax}
+        </p>
+        <p>
+          <strong>Address:</strong>{" "}
+          {`${reservation.address.street}, ${reservation.address.city}, ${reservation.address.province}`}
+        </p>
+        <p>
+          <strong>Subtotal:</strong> PHP{" "}
+          {reservation.subtotal?.toLocaleString() || "N/A"}
+        </p>
+        <p>
+          <strong>Selected Items:</strong>{" "}
+          {reservation.selectedItems?.map((item) => item.name).join(", ") ||
+            "No items"}
+        </p>
+      </div>
+    );
+  };
 
   return (
-    <div className="reservations-container">
-      <ToastContainer
-        position="top-right"
-        autoClose={3000}
-        hideProgressBar={false}
-        newestOnTop
-        closeOnClick
-        rtl={false}
-        pauseOnFocusLoss
-        draggable
-        pauseOnHover
-      />
-      <h2 className="reservations-title">Reservations</h2>
-      <div className="reservations-grid">
-        {reservations.map((reservation) => (
-          <div key={reservation._id} className="reservation-card">
-            <div className="reservation-content">
-              <div className="reservation-details">
-                <p>
-                  <span className="label">Customer Name:</span>{" "}
-                  {reservation.customerName}
-                </p>
-                <p>
-                  <span className="label">Date:</span>{" "}
-                  {new Date(reservation.date).toLocaleDateString()}
-                </p>
-                <p>
-                  <span className="label">Time Slot:</span>{" "}
-                  {reservation.timeSlot}
-                </p>
-                <p>
-                  <span className="label">Pax:</span> {reservation.pax}
-                </p>
-                <p>
-                  <span className="label">Address:</span>{" "}
-                  {formatAddress(reservation.address)}
-                </p>
-              </div>
-              <div className="reservation-items">
-                <p className="label">Selected Items:</p>
-                <ul className="items-list">
-                  {reservation.selectedItems?.map((item, index) => (
-                    <li key={index}>{item}</li>
-                  ))}
-                </ul>
-                <p>
-                  <span className="label">Subtotal:</span> ₱
-                  {reservation.subtotal?.toLocaleString()}
-                </p>
-                {!reservation.accepted && (
-                  <button
-                    onClick={() => handleAcceptReservation(reservation._id)}
-                    className="accept-button"
-                  >
-                    Accept Reservation
-                  </button>
-                )}
-              </div>
-            </div>
-          </div>
-        ))}
+    <div className="view-reservations">
+      <h1>Reservation Management</h1>
+
+      {/* Filters */}
+      <div className="reservation-filters">
+        <select
+          name="status"
+          value={filters.status}
+          onChange={handleFilterChange}
+        >
+          <option value="">All Statuses</option>
+          <option value="pending">Pending</option>
+          <option value="confirmed">Confirmed</option>
+          <option value="cancelled">Cancelled</option>
+          <option value="completed">Completed</option>
+        </select>
+
+        <select
+          name="timeSlot"
+          value={filters.timeSlot}
+          onChange={handleFilterChange}
+        >
+          <option value="">All Time Slots</option>
+          <option value="lunch">Lunch</option>
+          <option value="early-dinner">Early Dinner</option>
+          <option value="dinner">Dinner</option>
+        </select>
+
+        <input
+          type="date"
+          name="startDate"
+          value={filters.startDate}
+          onChange={handleFilterChange}
+          placeholder="Start Date"
+        />
+
+        <input
+          type="date"
+          name="endDate"
+          value={filters.endDate}
+          onChange={handleFilterChange}
+          placeholder="End Date"
+        />
       </div>
+
+      {/* Reservations List */}
+      {loading ? (
+        <p>Loading reservations...</p>
+      ) : (
+        <div className="reservations-list">
+          {filteredReservations.length === 0 ? (
+            <p>No reservations found.</p>
+          ) : (
+            filteredReservations.map((reservation) => (
+              <div key={reservation._id} className="reservation-card">
+                <div className="reservation-header">
+                  <span className={`status-badge ${reservation.status}`}>
+                    {reservation.status.toUpperCase()}
+                  </span>
+                  <div className="reservation-actions">
+                    {reservation.status === "pending" && (
+                      <>
+                        <button
+                          onClick={() =>
+                            updateReservationStatus(
+                              reservation._id,
+                              "confirmed"
+                            )
+                          }
+                          className="confirm-btn"
+                        >
+                          Confirm
+                        </button>
+                        <button
+                          onClick={() =>
+                            updateReservationStatus(
+                              reservation._id,
+                              "cancelled"
+                            )
+                          }
+                          className="cancel-btn"
+                        >
+                          Cancel
+                        </button>
+                      </>
+                    )}
+                  </div>
+                </div>
+                {renderReservationDetails(reservation)}
+              </div>
+            ))
+          )}
+        </div>
+      )}
     </div>
   );
 };
